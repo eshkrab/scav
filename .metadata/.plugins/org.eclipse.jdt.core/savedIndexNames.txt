@@ -1,0 +1,3 @@
+INDEX VERSION 1.126+/Users/Shkryaba/Documents/scav/.metadata/.plugins/org.eclipse.jdt.core
+3884618077.index
+327315381.index
