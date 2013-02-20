@@ -1,0 +1,5 @@
+ColorsAndFontsPreferencePage.expandedCategories=Torg.eclipse.ui.workbenchMisc
+ColorsAndFontsPreferencePage.selectedElement=Forg.eclipse.jface.textfont
+eclipse.preferences.version=1
+org.eclipse.jdt.ui.editors.textfont=1|Source Code Pro|14.0|0|COCOA|1|SourceCodePro-Regular;
+org.eclipse.jface.textfont=1|Source Code Pro|14.0|0|COCOA|1|SourceCodePro-Regular;
