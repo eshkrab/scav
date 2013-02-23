@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+    
+
+    <TabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/items_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/items_tab"
+                    android:showAsAction="ifRoom|withText" >
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/team_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/team_tab"
+                    android:showAsAction="ifRoom|withText" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/me_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/me_tab"
+                    android:showAsAction="ifRoom|withText" >
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+</RelativeLayout>

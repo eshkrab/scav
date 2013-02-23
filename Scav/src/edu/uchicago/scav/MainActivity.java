@@ -25,6 +25,12 @@ public class MainActivity extends Activity
     		startActivity(login);
     		settings.edit().putBoolean("first_launch", false).commit();
     	}
+    	else
+    	{
+    		Intent tabs = new Intent(MainActivity.this, Tabs.class);
+    		startActivity(tabs);
+    		
+    	}
     	setContentView(R.layout.activity_main);
     }
     

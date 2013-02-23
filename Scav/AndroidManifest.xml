@@ -18,6 +18,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,6 +30,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.uchicago.scav" />
+        </activity>
+        <activity
+            android:name="edu.uchicago.scav.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="edu.uchicago.scav.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.uchicago.scav.MainActivity" />
+        </activity>
+        <activity
+            android:name="edu.uchicago.scav.Tabs"
+            android:label="@string/title_activity_tabs"
+            android:parentActivityName="edu.uchicago.scav.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.uchicago.scav.MainActivity" />
         </activity>
     </application>
 

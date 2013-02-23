@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_settings"/>
+    <group android:id="@+id/tabs" android:menuCategory="container" android:enabled="true" android:visible="true">
+        <item android:id="@id/items_tab" android:checkable="false" android:numericShortcut="1" android:enabled="true" android:titleCondensed="@string/items_tab" android:menuCategory="container" android:visible="true" android:title="@string/items_tab" android:alphabeticShortcut="i"></item>
+    </group>
+
+</menu>
