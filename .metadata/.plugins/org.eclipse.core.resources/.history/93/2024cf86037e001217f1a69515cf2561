@@ -108,7 +108,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		case R.id.menu_settings:
 			Intent settings = new Intent(Tabs.this, SettingsActivity.class);
 			startActivity(settings);
-			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
