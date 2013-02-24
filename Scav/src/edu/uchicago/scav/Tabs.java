@@ -2,6 +2,7 @@ package edu.uchicago.scav;
 
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -20,9 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+@SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
-	final String PREFS_NAME = "MyPrefsFile";
+	final String PREFS_NAME = "ScavPrefsFile";
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -48,7 +50,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		// Show the Up button in the action bar.
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(false);
+		actionBar.setTitle(R.string.app_name);
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
@@ -71,7 +74,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				});
 
 		// For each of the sections in the app, add a tab to the action bar.
-		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++)
+		{
 			// Create a tab with text corresponding to the page title defined by
 			// the adapter. Also specify this Activity object, which implements
 			// the TabListener interface, as the callback (listener) for when
@@ -80,6 +84,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+		
 	}
 
 	@Override
@@ -158,16 +163,16 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			// Show 3 total pages.
 			return 3;
 		}
-
+		
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
 			case 0:
-				return getString(R.string.items_tab).toUpperCase(Locale.US);
+				return getString(R.string.items_tab).toUpperCase(Locale.getDefault());
 			case 1:
-				return getString(R.string.team_tab).toUpperCase(Locale.US);
+				return getString(R.string.team_tab).toUpperCase(Locale.getDefault());
 			case 2:
-				return getString(R.string.me_tab).toUpperCase(Locale.US);
+				return getString(R.string.me_tab).toUpperCase(Locale.getDefault());
 			}
 			return null;
 		}
@@ -202,7 +207,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	public static class TabsFragment extends Fragment
 	{
-		public static final String ARG_SECTION_NUMBER = "section_number";
+		public final static String ARG_SECTION_NUMBER = "section_number";
 		
 		public TabsFragment()
 		{
@@ -223,7 +228,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				text = getString(R.string.items_tab);
 				break;
 			case 1:
-				text = getString(R.string.team_tab);
+				text = getTeam();
 				break;
 			case 2:
 				text = getString(R.string.me_tab);
@@ -236,11 +241,23 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		}
 	}
 	
+	// TESTING
+	// this method is for testing purposes only and should be removed from the final version
 	public void firstLaunchClick()
-	   {
-	    	SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	    	settings.edit().putBoolean("first_launch", true).commit();
-	    	android.os.Process.killProcess(android.os.Process.myPid());
-	   }
+	{
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    settings.edit().putBoolean("first_launch", true).commit();
+	    Intent login = new Intent(Tabs.this, LoginActivity.class);
+	    startActivity(login);
+	    // android.os.Process.killProcess(android.os.Process.myPid());
+	    finish();
+	}
+	
+	public static String getTeam()
+	{
+		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.getPrefsName(), 0);
+		String team = settings.getString("user_team", "none");
+		return team;
+	}
 
 }

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,24 +64,25 @@ public class LoginActivity extends Activity {
 		mEmailView = (EditText) findViewById(R.id.email);
 		mEmailView.setText(mEmail);
 		
-		mEmailView.setOnClickListener(new View.OnClickListener() {
+/*		mEmailView.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				((EditText) findViewById(R.id.email)).setText(R.string.uchicago_email);
-				
-			}
-		});
+			}	
+		});*/
 		
-		mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			
+		mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {	
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				// TODO Auto-generated method stub
-				if (hasFocus)
+				if (!hasFocus)
 				{
 					Editable email = ((EditText) findViewById(R.id.email)).getText();
-					((EditText) findViewById(R.id.email)).setText(email);
+					String enteredText = email.toString();
+					if (!enteredText.contains("@uchicago.edu"))
+					{
+						((EditText) findViewById(R.id.email)).setText(enteredText + "@uchicago.edu");
+					}
 				}
 			}
 		});
@@ -139,7 +141,10 @@ public class LoginActivity extends Activity {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.pretend:
-			
+			Intent tabs = new Intent(LoginActivity.this, Tabs.class);
+			startActivity(tabs);
+			finish();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -283,6 +288,8 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
+				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
+				startActivity(pickTeam);
 				finish();
 			} else {
 				mPasswordView
