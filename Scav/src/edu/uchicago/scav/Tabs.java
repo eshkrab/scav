@@ -1,5 +1,7 @@
 package edu.uchicago.scav;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
@@ -19,7 +21,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
@@ -83,8 +89,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			actionBar.addTab(actionBar.newTab()
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
-		}
-		
+		}	
 	}
 
 	@Override
@@ -166,7 +171,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		
 		@Override
 		public CharSequence getPageTitle(int position) {
-			switch (position) {
+			switch (position)
+			{
 			case 0:
 				return getString(R.string.items_tab).toUpperCase(Locale.getDefault());
 			case 1:
@@ -222,27 +228,59 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					ARG_SECTION_NUMBER);
 			String text = null;
 			
+			View view = null;
+			
 			switch(sectionNumber)
 			{
 			case 0:
-				text = getString(R.string.items_tab);
-				break;
+				ListView teamList = getTeamList();
+				return teamList;
 			case 1:
 				text = getTeam();
-				break;
+				TextView teamView = new TextView(getActivity());
+				teamView.setText(text);
+				return teamView;
 			case 2:
 				text = getString(R.string.me_tab);
-				break;
+				TextView textView = new TextView(getActivity());
+				textView.setText(text);
+				return textView;
 			}
 			
-			TextView textView = new TextView(getActivity());
-			textView.setText(text);
-			return textView;
+			// this is needed syntactically, not logically
+			// because the method needs to return something
+			return view;
+		}
+		
+		public ListView getTeamList()
+		{
+			ListView itemsView = new ListView(getActivity());
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1, 
+					android.R.id.text1);
+			for (int i=0; i < Tabs.getItems().size(); i++)
+			{
+				Item curItem = Tabs.getItems().get(i);
+				String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
+				adapter.add(itemString);
+			}
+			itemsView.setAdapter(adapter);
+			
+			itemsView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener()
+			{
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+				{
+					Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
+				}
+			});
+			
+			return itemsView;
 		}
 	}
 	
 	// TESTING
 	// this method is for testing purposes only and should be removed from the final version
+	// as should be its button from the action bar in layout/activity_pick_team.xml
 	public void firstLaunchClick()
 	{
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -251,6 +289,16 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    startActivity(login);
 	    // android.os.Process.killProcess(android.os.Process.myPid());
 	    finish();
+	}
+	
+	public static List<Item> getItems()
+	{
+		// placeholder data, replace with real stuff when possible
+		List<Item> items = new ArrayList<Item>();
+		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
+		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
+		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
+		return items;
 	}
 	
 	public static String getTeam()
