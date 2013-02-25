@@ -9,6 +9,7 @@ import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -184,32 +185,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		}
 	}
 
-	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
-	 */
-/*	public static class DummySectionFragment extends Fragment {
-		*//**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 *//*
-		public static final String ARG_SECTION_NUMBER = "section_number";
-
-		public DummySectionFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			// Create a new TextView and set its text to the fragment's section
-			// number argument value.
-			TextView textView = new TextView(getActivity());
-			textView.setGravity(Gravity.CENTER);
-			textView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
-			return textView;
-		}
-	}*/
 	
 	public static class TabsFragment extends Fragment
 	{
@@ -227,14 +202,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			int sectionNumber = getArguments().getInt(
 					ARG_SECTION_NUMBER);
 			String text = null;
-			
 			View view = null;
-			
+		
 			switch(sectionNumber)
 			{
 			case 0:
-				ListView teamList = getTeamList();
-				return teamList;
+				ListView itemView = getItemList();
+				return itemView;
 			case 1:
 				text = getTeam();
 				TextView teamView = new TextView(getActivity());
@@ -245,24 +219,41 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				TextView textView = new TextView(getActivity());
 				textView.setText(text);
 				return textView;
+			default:
+				// this is needed syntactically, not logically
+				// because the method needs to return something
+				return view;
 			}
 			
-			// this is needed syntactically, not logically
-			// because the method needs to return something
-			return view;
 		}
 		
-		public ListView getTeamList()
+		public ListView getItemList()
 		{
 			ListView itemsView = new ListView(getActivity());
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1, 
-					android.R.id.text1);
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
+			{
+				// the following is to make the text in the list black
+				// because by default it comes out as white
+		 		@Override
+		 		public View getView(int position, View convertView,
+	                ViewGroup parent)
+		 		{
+		 			View view = super.getView(position, convertView, parent);
+		 			TextView textView = (TextView) view.findViewById(android.R.id.text1);
+
+		 			textView.setTextColor(Color.BLACK);
+		 			return view;
+		 		}
+			};
+			
 			for (int i=0; i < Tabs.getItems().size(); i++)
 			{
 				Item curItem = Tabs.getItems().get(i);
 				String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
 				adapter.add(itemString);
 			}
+			
+			
 			itemsView.setAdapter(adapter);
 			
 			itemsView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener()
