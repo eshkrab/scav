@@ -1,5 +1,6 @@
 package edu.uchicago.scav;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.AsyncTask;
+import android.content.Context;
+
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.jackson.JacksonFactory;
+
+import edu.uchicago.scav.itemendpoint.Itemendpoint;
+import edu.uchicago.scav.itemendpoint.model.Item;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
@@ -50,6 +61,10 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		 new EndpointsTask().execute(getApplicationContext());
+		 
+		 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tabs);
 
@@ -91,6 +106,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}	
+		
 	}
 
 	@Override
@@ -249,8 +265,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			for (int i=0; i < Tabs.getItems().size(); i++)
 			{
 				Item curItem = Tabs.getItems().get(i);
-				String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
-				adapter.add(itemString);
+			//	String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
+			//	adapter.add(itemString);
 			}
 			
 			
@@ -261,7 +277,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
-					Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
+			//		Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
 				}
 			});
 			
@@ -286,9 +302,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	{
 		// placeholder data, replace with real stuff when possible
 		List<Item> items = new ArrayList<Item>();
-		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
-		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
-		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
+//		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
+//		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
+//		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
 		return items;
 	}
 	
@@ -298,5 +314,28 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		String team = settings.getString("user_team", "none");
 		return team;
 	}
+
+	public class EndpointsTask extends AsyncTask<Context, Integer, Long> {
+        protected Long doInBackground(Context... contexts) {
+
+               Itemendpoint.Builder endpointBuilder = new Itemendpoint.Builder(
+              AndroidHttp.newCompatibleTransport(),
+              new JacksonFactory(),
+              new HttpRequestInitializer() {
+              public void initialize(HttpRequest httpRequest) { }
+              });
+      Itemendpoint endpoint = CloudEndpointUtils.updateBuilder(
+      endpointBuilder).build();
+      try {
+          Item it = new Item();
+          
+               
+          Item result = endpoint.insertItem(it).execute();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+          return (long) 0;
+        }
+    }
 
 }

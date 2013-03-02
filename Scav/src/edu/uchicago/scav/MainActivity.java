@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 
 
+
 public class MainActivity extends Activity
 {
 	
@@ -15,6 +16,8 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+    		
+    		
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         

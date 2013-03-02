@@ -1,61 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.uchicago.scav"
-    android:versionCode="1"
-    android:versionName="1.0" >
+<?xml version="1.0" encoding="utf-8" standalone="no"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="edu.uchicago.scav">
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17"/>
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="Scav" >
-        <activity
-            android:name="edu.uchicago.scav.MainActivity"
-            android:label="@string/app_name" >
+    <permission android:name="edu.uchicago.scav.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <uses-permission android:name="edu.uchicago.scav.permission.C2D_MESSAGE"/>
+   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+   <uses-permission android:name="android.permission.WAKE_LOCK"/>
+   <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+   <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+   <application android:allowBackup="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:name="Scav" android:theme="@style/AppTheme">
+        <activity android:label="@string/app_name" android:name="edu.uchicago.scav.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name="edu.uchicago.scav.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:parentActivityName="edu.uchicago.scav"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uchicago.scav" />
+        <activity android:label="@string/title_activity_login" android:name="edu.uchicago.scav.LoginActivity" android:parentActivityName="edu.uchicago.scav" android:windowSoftInputMode="adjustResize|stateVisible">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="edu.uchicago.scav"/>
         </activity>
-        <activity
-            android:name="edu.uchicago.scav.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName="edu.uchicago.scav.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uchicago.scav.MainActivity" />
+        <activity android:label="@string/title_activity_settings" android:name="edu.uchicago.scav.SettingsActivity" android:parentActivityName="edu.uchicago.scav.MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="edu.uchicago.scav.MainActivity"/>
         </activity>
-        <activity
-            android:name="edu.uchicago.scav.Tabs"
-            android:label="@string/title_activity_tabs"
-            android:parentActivityName="edu.uchicago.scav.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uchicago.scav.MainActivity" />
+        <activity android:label="@string/title_activity_tabs" android:name="edu.uchicago.scav.Tabs" android:parentActivityName="edu.uchicago.scav.MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="edu.uchicago.scav.MainActivity"/>
         </activity>
-        <activity
-            android:name="edu.uchicago.scav.PickTeam"
-            android:label="@string/title_activity_pick_team"
-            android:parentActivityName="edu.uchicago.scav.LoginActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uchicago.scav.LoginActivity" />
+        <activity android:label="@string/title_activity_pick_team" android:name="edu.uchicago.scav.PickTeam" android:parentActivityName="edu.uchicago.scav.LoginActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="edu.uchicago.scav.LoginActivity"/>
         </activity>
-    </application>
+        <service android:name=".GCMIntentService"/>
+        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="edu.uchicago.scav"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="edu.uchicago.scav"/>
+            </intent-filter>
+        </receiver>
+    
+        <activity android:launchMode="singleTop" android:name=".RegisterActivity"/>
+</application>
 
 </manifest>

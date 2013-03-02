@@ -54,6 +54,9 @@ public class LoginActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		//Google Could Reg
+		GCMIntentService.register(Scav.getApp());
+		
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_login);
