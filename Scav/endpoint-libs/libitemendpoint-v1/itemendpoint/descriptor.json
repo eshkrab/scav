@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "scavapp-itemendpoint-v1-20130302205020-java-1.13.2-beta-sources.jar", 
+      "path": "scavapp-itemendpoint-v1-20130304015702-java-1.13.2-beta-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "scavapp-itemendpoint-v1-20130302205020-java-1.13.2-beta.jar.properties", 
+      "path": "scavapp-itemendpoint-v1-20130304015702-java-1.13.2-beta.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -690,7 +690,7 @@
     }
   ], 
   "language_version": "1.13.2-beta", 
-  "revision": 20130302205020, 
+  "revision": 20130304015702, 
   "id": "itemendpoint:v1", 
   "name": "itemendpoint"
 }

@@ -1,0 +1,219 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://scavapp.appspot.com/_ah/api",
+  "name" : "playerendpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "http://scavapp.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "methods" : {
+    "playerendpoint.removePlayer" : {
+      "path" : "player/{id}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "PlayerEndpoint.removePlayer",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "playerendpoint.updatePlayer" : {
+      "path" : "player",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "PlayerEndpoint.updatePlayer",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "playerendpoint.insertPlayer" : {
+      "path" : "player",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "PlayerEndpoint.insertPlayer",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "playerendpoint.getPlayer" : {
+      "path" : "player/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "PlayerEndpoint.getPlayer",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "playerendpoint.listPlayer" : {
+      "path" : "player",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "PlayerEndpoint.listPlayer",
+      "request" : {
+        "parameters" : {
+          "cursor" : {
+            "type" : "string",
+            "required" : false
+          },
+          "limit" : {
+            "type" : "int32",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "Player" : {
+        "id" : "Player",
+        "type" : "object",
+        "properties" : {
+          "userID" : {
+            "type" : "string"
+          },
+          "pswd" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "$ref" : "Email"
+          },
+          "about" : {
+            "type" : "string"
+          },
+          "team" : {
+            "type" : "string"
+          },
+          "number" : {
+            "$ref" : "PhoneNumber"
+          }
+        }
+      },
+      "Email" : {
+        "id" : "Email",
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PhoneNumber" : {
+        "id" : "PhoneNumber",
+        "type" : "object",
+        "properties" : {
+          "number" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CollectionResponse_Player" : {
+        "id" : "CollectionResponse_Player",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Player"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "methods" : {
+      "PlayerEndpoint.removePlayer" : {
+        "response" : {
+          "$ref" : "Player"
+        }
+      },
+      "PlayerEndpoint.updatePlayer" : {
+        "request" : {
+          "$ref" : "Player"
+        },
+        "response" : {
+          "$ref" : "Player"
+        }
+      },
+      "PlayerEndpoint.insertPlayer" : {
+        "request" : {
+          "$ref" : "Player"
+        },
+        "response" : {
+          "$ref" : "Player"
+        }
+      },
+      "PlayerEndpoint.getPlayer" : {
+        "response" : {
+          "$ref" : "Player"
+        }
+      },
+      "PlayerEndpoint.listPlayer" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Player"
+        }
+      }
+    }
+  }
+}

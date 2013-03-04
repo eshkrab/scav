@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/wTObiCZmpJqV6_XZc0qNNAvegFU\"",
+ "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/3aACJ4RKeqVKgVgE8MW5itBZs04\"",
  "discoveryVersion": "v1",
  "id": "itemendpoint:v1",
  "name": "itemendpoint",
@@ -79,7 +79,30 @@
   },
   "Item": {
    "id": "Item",
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "duedate": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "name": {
+     "type": "string"
+    },
+    "number": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "points": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "status": {
+     "type": "string"
+    }
+   }
   }
  },
  "methods": {

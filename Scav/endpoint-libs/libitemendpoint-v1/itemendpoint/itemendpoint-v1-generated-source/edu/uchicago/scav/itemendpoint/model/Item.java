@@ -35,4 +35,143 @@ import com.google.api.client.json.GenericJson;
 @SuppressWarnings("javadoc")
 public final class Item extends GenericJson {
 
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private String description;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private Integer duedate;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private String name;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private Integer number;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private Integer points;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private String status;
+
+
+/**
+
+   * The value returned may be {@code null}.
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setDescription(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public Integer getDuedate() {
+    return duedate;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setDuedate(Integer duedate) {
+    this.duedate = duedate;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public Integer getNumber() {
+    return number;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setNumber(Integer number) {
+    this.number = number;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public Integer getPoints() {
+    return points;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setPoints(Integer points) {
+    this.points = points;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public String getStatus() {
+    return status;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setStatus(String status) {
+    this.status = status;
+    return this;
+  }
+
 }

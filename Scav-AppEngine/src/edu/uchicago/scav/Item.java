@@ -14,23 +14,27 @@ import javax.persistence.Id;
 @Entity
 public class Item {
 	
-	@Id
-	public final int number;
-	public final String name;
-	public final String description;
-	public  String status;
-	public final int points;
+	public String name;
+	public String description;
+	public String status;
+	public int points;
+	public int duedate;
+	
+	@Id public int number;
+	
+
 
 	
 	
 	
-	public Item(int number, String name, String description, String status, int points)
+	public Item(int number, String name, String description, String status, int points, int due)
 	{
 		this.number = number;
 		this.name = name;
 		this.description = description;
 		this.status = status;
 		this.points = points;
+		this.duedate = due;
 	}
 	
 	//Getters
@@ -49,6 +53,9 @@ public class Item {
 	}
 	public int  getPoints(){
 		return points;
+	}
+	public int  getDuedate(){
+		return duedate;
 	}
 	
 	//Setters

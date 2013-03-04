@@ -62,7 +62,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
-		 new EndpointsTask().execute(getApplicationContext());
+		
 		 
 		 
 		super.onCreate(savedInstanceState);
@@ -106,6 +106,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}	
+		new EndpointsTask().execute(getApplicationContext());
 		
 	}
 
@@ -327,10 +328,11 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
       Itemendpoint endpoint = CloudEndpointUtils.updateBuilder(
       endpointBuilder).build();
       try {
-          Item it = new Item();
-          
-               
-          Item result = endpoint.insertItem(it).execute();
+          Item item = new Item().setDescription("OMG <EQUITY> DES <GO> <PRINT>");
+          item.setPoints(5);
+          item.setNumber(1);
+          item.setName("prog");         
+          Item result = endpoint.insertItem(item).execute();
       } catch (IOException e) {
         e.printStackTrace();
       }
