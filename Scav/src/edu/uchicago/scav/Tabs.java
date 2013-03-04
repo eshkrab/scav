@@ -331,7 +331,10 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
           Item item = new Item().setDescription("OMG <EQUITY> DES <GO> <PRINT>");
           item.setPoints(5);
           item.setNumber(1);
-          item.setName("prog");         
+          item.setName("prog"); 
+          item.setPoints(5);
+          item.setDuedate(120350);
+          item.setStatus("available"); 
           Item result = endpoint.insertItem(item).execute();
       } catch (IOException e) {
         e.printStackTrace();
