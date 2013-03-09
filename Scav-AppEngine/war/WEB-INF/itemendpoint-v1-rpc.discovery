@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/3aACJ4RKeqVKgVgE8MW5itBZs04\"",
+ "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/iDO9tvX6wWQHbUObQrHQfb0Uk9M\"",
  "discoveryVersion": "v1",
  "id": "itemendpoint:v1",
  "name": "itemendpoint",
@@ -83,8 +83,12 @@
      "type": "string"
     },
     "duedate": {
-     "type": "integer",
-     "format": "int32"
+     "type": "string",
+     "format": "date-time"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
     },
     "name": {
      "type": "string"

@@ -11,8 +11,8 @@
  */
 /*
  * This file was generated.
- *  with google-apis-code-generator 1.2.0 (build: 2013-02-14 15:45:00 UTC)
- *  on 2013-03-04 at 01:57:25 UTC 
+ *  with google-apis-code-generator 1.2.0 (build: 2013-03-04 17:44:07 UTC)
+ *  on 2013-03-09 at 19:13:58 UTC 
  */
 
 package edu.uchicago.scav.teamendpoint;
@@ -25,6 +25,7 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
+import com.google.api.client.json.JsonString;
 import com.google.common.base.Preconditions;
 
 /**
@@ -153,7 +154,7 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
    * @param id
    * @return the request
    */
-  public GetTeam getTeam(String id) throws java.io.IOException {
+  public GetTeam getTeam(Long id) throws java.io.IOException {
     GetTeam result = new GetTeam(id);
     initialize(result);
     return result;
@@ -174,7 +175,7 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
      * @param id
      * @since 1.13
      */
-    protected GetTeam(String id) {
+    protected GetTeam(Long id) {
       super(Teamendpoint.this, "GET", REST_PATH, null, edu.uchicago.scav.teamendpoint.model.Team.class);
       this.id = Preconditions.checkNotNull(id, "Required parameter id must be specified.");
     }
@@ -225,16 +226,16 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
     }
 
     @com.google.api.client.util.Key
-    private String id;
+    private Long id;
 
     /**
 
      */
-    public String getId() {
+    public Long getId() {
       return id;
     }
 
-    public GetTeam setId(String id) {
+    public GetTeam setId(Long id) {
       this.id = id;
       return this;
     }
@@ -430,7 +431,7 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
    * @param id
    * @return the request
    */
-  public RemoveTeam removeTeam(String id) throws java.io.IOException {
+  public RemoveTeam removeTeam(Long id) throws java.io.IOException {
     RemoveTeam result = new RemoveTeam(id);
     initialize(result);
     return result;
@@ -451,7 +452,7 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
      * @param id
      * @since 1.13
      */
-    protected RemoveTeam(String id) {
+    protected RemoveTeam(Long id) {
       super(Teamendpoint.this, "DELETE", REST_PATH, null, edu.uchicago.scav.teamendpoint.model.Team.class);
       this.id = Preconditions.checkNotNull(id, "Required parameter id must be specified.");
     }
@@ -492,16 +493,16 @@ public class Teamendpoint extends AbstractGoogleJsonClient {
     }
 
     @com.google.api.client.util.Key
-    private String id;
+    private Long id;
 
     /**
 
      */
-    public String getId() {
+    public Long getId() {
       return id;
     }
 
-    public RemoveTeam setId(String id) {
+    public RemoveTeam setId(Long id) {
       this.id = id;
       return this;
     }

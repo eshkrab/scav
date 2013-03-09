@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "scavapp-playerendpoint-v1-20130304015715-java-1.13.2-beta-sources.jar", 
+      "path": "scavapp-playerendpoint-v1-20130309191354-java-1.13.2-beta-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "scavapp-playerendpoint-v1-20130304015715-java-1.13.2-beta.jar.properties", 
+      "path": "scavapp-playerendpoint-v1-20130309191354-java-1.13.2-beta.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -690,7 +690,7 @@
     }
   ], 
   "language_version": "1.13.2-beta", 
-  "revision": 20130304015715, 
+  "revision": 20130309191354, 
   "id": "playerendpoint:v1", 
   "name": "playerendpoint"
 }

@@ -1,10 +1,19 @@
 package edu.uchicago.scav;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.appengine.api.datastore.Key;
 
 /*
  * Team class
@@ -18,13 +27,21 @@ import javax.persistence.Id;
 public class Team {
 	
 	@Id
-	public String name;
-	public String description;
-	public Player captain;
-	public List<Player> members = new ArrayList<Player>();
+	  @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	
+	private String name;
+	private String description;
+	@Persistent(mappedBy = "team")
+	private Player captain;
+	@Persistent(mappedBy = "team")
+	public List<Player> members;
 
 	
-	
+	public Team()
+	{
+		
+	}
 	
 	public Team(String name, String description, Player cap)
 	{
@@ -33,7 +50,14 @@ public class Team {
 		this.captain = cap;
 	}
 	
-	//Getters
+	//Get&Set
+	public int getId() {
+	    return id;
+	  }
+
+	  public void setId(int id) {
+	    this.id = id;
+	  }
 	public String  getName(){
 		return name;
 	}
@@ -41,23 +65,22 @@ public class Team {
 	public String  getDescription(){
 		return description;
 	}
+	public void  setDescription(String desc){
+		this.description=desc;
+	}
+	
 	public Player  getCaptain(){
 		return captain;
 	}
+	public void  setCaptain(Player cap){
+		this.captain=cap;
+	}
+	
 	public List<Player>  getMembers(){
 		return members;
 	}
-	
-	//Setters
-
-		public void  setDescription(String desc){
-			this.description=desc;
-		}
-		public void  setCaptain(Player cap){
-			this.captain=cap;
-		}
-	
-
+			
+	@ApiMethod
 	//Add member method
 		public void addMember(Player member){
 			this.members.add(member);

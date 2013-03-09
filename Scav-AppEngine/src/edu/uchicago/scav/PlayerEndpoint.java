@@ -147,7 +147,7 @@ public class PlayerEndpoint {
 		EntityManager mgr = getEntityManager();
 		boolean contains = true;
 		try {
-			Player item = mgr.find(Player.class, player.getUserID());
+			Player item = mgr.find(Player.class, player.getId());
 			if (item == null) {
 				contains = false;
 			}

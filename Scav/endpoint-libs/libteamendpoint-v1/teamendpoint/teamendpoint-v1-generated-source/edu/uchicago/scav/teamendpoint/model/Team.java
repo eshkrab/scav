@@ -51,6 +51,12 @@ public final class Team extends GenericJson {
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
+  private Integer id;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
   private java.util.List<Player> members;
 
   static {
@@ -96,6 +102,23 @@ public final class Team extends GenericJson {
    */
   public Team setDescription(String description) {
     this.description = description;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public Integer getId() {
+    return id;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Team setId(Integer id) {
+    this.id = id;
     return this;
   }
 

@@ -16,6 +16,8 @@
 package edu.uchicago.scav.itemendpoint.model;
 
 import com.google.api.client.json.GenericJson;
+import com.google.api.client.json.JsonString;
+import com.google.api.client.util.DateTime;
 
 /**
  * Model definition for Item.
@@ -45,7 +47,13 @@ public final class Item extends GenericJson {
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private Integer duedate;
+  private DateTime duedate;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key @JsonString
+  private Long id;
 
   /**
    * The value may be {@code null}.
@@ -71,8 +79,7 @@ public final class Item extends GenericJson {
   @com.google.api.client.util.Key
   private String status;
 
-
-/**
+  /**
 
    * The value returned may be {@code null}.
    */
@@ -93,7 +100,7 @@ public final class Item extends GenericJson {
 
    * The value returned may be {@code null}.
    */
-  public Integer getDuedate() {
+  public DateTime getDuedate() {
     return duedate;
   }
 
@@ -101,8 +108,25 @@ public final class Item extends GenericJson {
 
    * The value set may be {@code null}.
    */
-  public Item setDuedate(Integer duedate) {
+  public Item setDuedate(DateTime duedate) {
     this.duedate = duedate;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public Long getId() {
+    return id;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Item setId(Long id) {
+    this.id = id;
     return this;
   }
 

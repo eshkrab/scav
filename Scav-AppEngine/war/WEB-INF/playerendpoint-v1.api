@@ -125,6 +125,9 @@
         "id" : "Player",
         "type" : "object",
         "properties" : {
+          "id" : {
+            "type" : "string"
+          },
           "userID" : {
             "type" : "string"
           },

@@ -1,8 +1,15 @@
 package edu.uchicago.scav;
 
-import javax.persistence.*;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PhoneNumber;
 import com.google.appengine.api.datastore.Email;
 
@@ -12,65 +19,81 @@ import com.google.appengine.api.datastore.Email;
 
 @Entity
 public class Player {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
 	
-
-    @Id 
     private String userID;
 	private String pswd;
 	public String name;
 	public Email email;
 	public PhoneNumber phoneNumber;
 	public String about;
+	@Persistent
 	public String team;
 	
+	public Player(){
+		
+	}
 	public Player(String user, String pass)
 	{
 		this.userID=user;
 		this.pswd=pass;
 	}
 	
-	//Getters
+	//Get&Set
 
+	public String getId() {
+	    return id;
+	  }
+
+	  public void setId(String Id) {
+	    this.id = Id;
+	  }
 	public String getUserID(){
 		return userID;
+	}
+	public void setUserID(String us){
+		this.userID=us;
 	}
 
 	public String getPswd(){
 		return pswd;
 	}
+	public void  setPswd(String pass){
+		this.pswd = pass;
+	}
 	
 	public String getName(){
 		return name;
 	}
-	public Email getEmail(){
-		return email;
-	}
-	public PhoneNumber getNumber(){
-		return phoneNumber;
-	}
-	public String getAbout(){
-		return about;
-	}
-	public String getTeam(){
-		return team;
-	}
-	
-	//Setters
-
-	public void  setPswd(String pass){
-		this.pswd = pass;
-	}
 	public void  setName(String nom){
 		this.name = nom;
+	}
+	
+	public Email getEmail(){
+		return email;
 	}
 	public void setEmail(Email address){
 		this.email= address;
 	}
+	
+	public PhoneNumber getNumber(){
+		return phoneNumber;
+	}
 	public void setNumber(PhoneNumber number){
 		this.phoneNumber=number;
 	}
+	
+	public String getAbout(){
+		return about;
+	}
 	public void  setAbout(String stuff){
 		this.about = stuff;
+	}
+	
+	public String getTeam(){
+		return team;
 	}
 	public void  setTeam(String teamname){
 		this.team = teamname;

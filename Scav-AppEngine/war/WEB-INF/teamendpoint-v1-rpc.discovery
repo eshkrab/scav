@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/PsMQyRy9zVtsU3pZoy3xvimgEzg\"",
+ "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/Db4SuExLs52SjawprENgis1QddQ\"",
  "discoveryVersion": "v1",
  "id": "teamendpoint:v1",
  "name": "teamendpoint",
@@ -103,6 +103,9 @@
     "email": {
      "$ref": "Email"
     },
+    "id": {
+     "type": "string"
+    },
     "name": {
      "type": "string"
     },
@@ -130,6 +133,10 @@
     "description": {
      "type": "string"
     },
+    "id": {
+     "type": "integer",
+     "format": "int32"
+    },
     "members": {
      "type": "array",
      "items": {
@@ -149,7 +156,8 @@
    "parameters": {
     "id": {
      "type": "string",
-     "required": true
+     "required": true,
+     "format": "int64"
     }
    },
    "parameterOrder": [
@@ -194,7 +202,8 @@
    "parameters": {
     "id": {
      "type": "string",
-     "required": true
+     "required": true,
+     "format": "int64"
     }
    },
    "parameterOrder": [

@@ -11,8 +11,8 @@
  */
 /*
  * This file was generated.
- *  with google-apis-code-generator 1.2.0 (build: 2013-02-14 15:45:00 UTC)
- *  on 2013-03-04 at 01:57:54 UTC 
+ *  with google-apis-code-generator 1.2.0 (build: 2013-03-04 17:44:07 UTC)
+ *  on 2013-03-09 at 19:14:05 UTC 
  */
 
 package edu.uchicago.scav.deviceinfoendpoint;

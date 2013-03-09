@@ -140,6 +140,13 @@
         "id" : "Item",
         "type" : "object",
         "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer"
+          },
           "name" : {
             "type" : "string"
           },
@@ -153,10 +160,8 @@
             "type" : "integer"
           },
           "duedate" : {
-            "type" : "integer"
-          },
-          "number" : {
-            "type" : "integer"
+            "type" : "string",
+            "format" : "date-time"
           }
         }
       }

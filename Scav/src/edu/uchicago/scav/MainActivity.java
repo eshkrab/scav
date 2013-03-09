@@ -1,8 +1,19 @@
 package edu.uchicago.scav;
 
+import java.io.IOException;
+
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.jackson.JacksonFactory;
+
+import edu.uchicago.scav.itemendpoint.Itemendpoint;
+import edu.uchicago.scav.itemendpoint.model.Item;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -16,7 +27,7 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-    	GCMIntentService.register(getApplicationContext());	
+ 
     		
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -46,4 +57,7 @@ public class MainActivity extends Activity
 		return true;
 	}
     
-}
+    
+   
+    }
+

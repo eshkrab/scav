@@ -147,8 +147,8 @@ public class ItemEndpoint {
 		EntityManager mgr = getEntityManager();
 		boolean contains = true;
 		try {
-			Item item1 = mgr.find(Item.class, item.getNumber());
-			if (item1 == null) {
+			Item newItem = mgr.find(Item.class, item.getId());
+			if (newItem == null) {
 				contains = false;
 			}
 		} finally {

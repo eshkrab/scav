@@ -34,15 +34,18 @@ import android.content.Context;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 
 import edu.uchicago.scav.itemendpoint.Itemendpoint;
 import edu.uchicago.scav.itemendpoint.model.Item;
+import edu.uchicago.scav.itemendpoint.Itemendpoint.Builder;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
+	static String error = "no error";
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -63,8 +66,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		
-		 
-		 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tabs);
 
@@ -106,7 +107,11 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}	
-		new EndpointsTask().execute(getApplicationContext());
+		//new EndpointsTask().execute(getApplicationContext());
+		
+    	new EndpointsTask().execute(getApplicationContext());
+    	
+    	//GCMIntentService.register(getApplicationContext());	
 		
 	}
 
@@ -224,7 +229,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			switch(sectionNumber)
 			{
 			case 0:
-				ListView itemView = getItemList();
+				//ListView itemView = getItemList();
+				TextView itemView = new TextView(getActivity());
+				itemView.setText(error);
 				return itemView;
 			case 1:
 				text = getTeam();
@@ -317,29 +324,31 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	}
 
 	public class EndpointsTask extends AsyncTask<Context, Integer, Long> {
-        protected Long doInBackground(Context... contexts) {
 
+        protected Long doInBackground(Context... contexts) {
+        	
                Itemendpoint.Builder endpointBuilder = new Itemendpoint.Builder(
-              AndroidHttp.newCompatibleTransport(),
-              new JacksonFactory(),
-              new HttpRequestInitializer() {
-              public void initialize(HttpRequest httpRequest) { }
-              });
-      Itemendpoint endpoint = CloudEndpointUtils.updateBuilder(
-      endpointBuilder).build();
+            	        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
+            	        new HttpRequestInitializer() {
+            	          public void initialize(HttpRequest httpRequest) {
+            	          }
+            	        });
+      Itemendpoint endpoint;
+      endpoint = endpointBuilder.build(); 
       try {
-          Item item = new Item().setDescription("OMG <EQUITY> DES <GO> <PRINT>");
-          item.setPoints(5);
+          Item item = new Item();
+          item.setDescription("OMG <EQUITY> DES <GO> <PRINT>");
           item.setNumber(1);
-          item.setName("prog"); 
-          item.setPoints(5);
-          item.setDuedate(120350);
-          item.setStatus("available"); 
           Item result = endpoint.insertItem(item).execute();
+          error = item.getDescription();
       } catch (IOException e) {
         e.printStackTrace();
+        error = "fatal error";
+      } 
+         return (long) 0;
       }
-          return (long) 0;
+        protected void onPostExecute(Long result) {
+        	Toast.makeText(Scav.getApp(), error, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "scavapp-teamendpoint-v1-20130304015725-java-1.13.2-beta-sources.jar", 
+      "path": "scavapp-teamendpoint-v1-20130309191358-java-1.13.2-beta-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "scavapp-teamendpoint-v1-20130304015725-java-1.13.2-beta.jar.properties", 
+      "path": "scavapp-teamendpoint-v1-20130309191358-java-1.13.2-beta.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -690,7 +690,7 @@
     }
   ], 
   "language_version": "1.13.2-beta", 
-  "revision": 20130304015725, 
+  "revision": 20130309191358, 
   "id": "teamendpoint:v1", 
   "name": "teamendpoint"
 }

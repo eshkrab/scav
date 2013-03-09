@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/v46QaqwLT1AsRQ_PnnJ9xfKzx_Y\"",
+ "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/24m-ok5ahMKFqWGCNZYgupABgmE\"",
  "discoveryVersion": "v1",
  "id": "playerendpoint:v1",
  "name": "playerendpoint",
@@ -104,6 +104,9 @@
     },
     "email": {
      "$ref": "Email"
+    },
+    "id": {
+     "type": "string"
     },
     "name": {
      "type": "string"

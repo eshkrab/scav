@@ -31,7 +31,7 @@ public class CloudEndpointUtils {
    * http://developers.google.com/eclipse/docs/cloud_endpoints for more
    * information.
    */
-  protected static final boolean LOCAL_ANDROID_RUN = false;
+  protected static final boolean LOCAL_ANDROID_RUN = false ;
 
   /*
    * The root URL of where your DevAppServer is running (if you're running the
@@ -62,6 +62,9 @@ public class CloudEndpointUtils {
     if (LOCAL_ANDROID_RUN) {
       builder.setRootUrl(LOCAL_APP_ENGINE_SERVER_URL_FOR_ANDROID
           + "/_ah/api/");
+    } else
+    {
+    	builder.setRootUrl("http://scavapp.appspot.com/_ah/api");
     }
 
     // only enable GZip when connecting to remote server

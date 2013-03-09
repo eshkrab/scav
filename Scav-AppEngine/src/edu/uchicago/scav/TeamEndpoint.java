@@ -71,7 +71,7 @@ public class TeamEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	public Team getTeam(@Named("id") String id) {
+	public Team getTeam(@Named("id") Long id) {
 		EntityManager mgr = getEntityManager();
 		Team team = null;
 		try {
@@ -131,7 +131,7 @@ public class TeamEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @return The deleted entity.
 	 */
-	public Team removeTeam(@Named("id") String id) {
+	public Team removeTeam(@Named("id") Long id) {
 		EntityManager mgr = getEntityManager();
 		Team team = null;
 		try {
@@ -147,7 +147,7 @@ public class TeamEndpoint {
 		EntityManager mgr = getEntityManager();
 		boolean contains = true;
 		try {
-			Team item = mgr.find(Team.class, team.getName());
+			Team item = mgr.find(Team.class, team.getId());
 			if (item == null) {
 				contains = false;
 			}
