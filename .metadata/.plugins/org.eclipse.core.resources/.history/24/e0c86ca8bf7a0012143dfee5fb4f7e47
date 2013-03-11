@@ -1,9 +1,0 @@
-package edu.uchicago.scav;
-
-public class DisplayMessageActivity extends MainActivity {
-
-	public DisplayMessageActivity() {
-		// TODO Auto-generated constructor stub
-	}
-
-}
