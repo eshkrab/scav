@@ -62,10 +62,10 @@ public class CloudEndpointUtils {
     if (LOCAL_ANDROID_RUN) {
       builder.setRootUrl(LOCAL_APP_ENGINE_SERVER_URL_FOR_ANDROID
           + "/_ah/api/");
-    } else
+    }/* else
     {
     	builder.setRootUrl("http://scavapp.appspot.com/_ah/api");
-    }
+    }*/
 
     // only enable GZip when connecting to remote server
     final boolean enableGZip = builder.getRootUrl().startsWith("https:");

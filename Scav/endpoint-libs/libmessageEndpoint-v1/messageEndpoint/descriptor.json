@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "scavapp-messageEndpoint-v1-20130309191402-java-1.13.2-beta-sources.jar", 
+      "path": "scavapp-messageEndpoint-v1-20130311181043-java-1.13.2-beta-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "scavapp-messageEndpoint-v1-20130309191402-java-1.13.2-beta.jar.properties", 
+      "path": "scavapp-messageEndpoint-v1-20130311181043-java-1.13.2-beta.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -690,7 +690,7 @@
     }
   ], 
   "language_version": "1.13.2-beta", 
-  "revision": 20130309191402, 
+  "revision": 20130311181043, 
   "id": "messageEndpoint:v1", 
   "name": "messageEndpoint"
 }

@@ -26,9 +26,9 @@ import com.google.appengine.api.datastore.Key;
 @Entity
 public class Team {
 	
-	@Id
-	  @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    private Long id;
 	
 	private String name;
 	private String description;
@@ -51,11 +51,11 @@ public class Team {
 	}
 	
 	//Get&Set
-	public int getId() {
+	public Long getId() {
 	    return id;
 	  }
 
-	  public void setId(int id) {
+	  public void setId(Long id) {
 	    this.id = id;
 	  }
 	public String  getName(){

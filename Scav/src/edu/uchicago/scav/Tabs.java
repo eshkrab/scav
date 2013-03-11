@@ -270,9 +270,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 		}
 			};
 			
-			for (int i=0; i < Tabs.getItems().size(); i++)
+//		for (int i=0; i < Tabs.getItems().size(); i++)
 			{
-				Item curItem = Tabs.getItems().get(i);
+//			Item curItem = Tabs.getItems().get(i);
 			//	String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
 			//	adapter.add(itemString);
 			}
@@ -306,14 +306,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	public static List<Item> getItems()
+//	public static List<Item> getItem()
 	{
 		// placeholder data, replace with real stuff when possible
-		List<Item> items = new ArrayList<Item>();
+//		List<Item> items = new ArrayList<Item>();
 //		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
 //		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
 //		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
-		return items;
+		//return items;
 	}
 	
 	public static String getTeam()
@@ -337,7 +337,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
       endpoint = endpointBuilder.build(); 
       try {
           Item item = new Item();
-          item.setDescription("OMG <EQUITY> DES <GO> <PRINT>");
+          item.setId((long) 5432);
+          item.setDescription("items items staplers 2");
           item.setNumber(1);
           Item result = endpoint.insertItem(item).execute();
           error = item.getDescription();

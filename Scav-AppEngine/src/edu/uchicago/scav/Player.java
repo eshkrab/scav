@@ -1,5 +1,6 @@
 package edu.uchicago.scav;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -19,9 +20,9 @@ import com.google.appengine.api.datastore.Email;
 
 @Entity
 public class Player {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String id;
+	@PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    private Key key;
 	
     private String userID;
 	private String pswd;
@@ -43,12 +44,12 @@ public class Player {
 	
 	//Get&Set
 
-	public String getId() {
-	    return id;
+	public Key getKey() {
+	    return key;
 	  }
 
-	  public void setId(String Id) {
-	    this.id = Id;
+	  public void setKey(Key key) {
+	    this.key = key;
 	  }
 	public String getUserID(){
 		return userID;
