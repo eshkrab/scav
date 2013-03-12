@@ -1,45 +1,24 @@
 package edu.uchicago.scav;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.*;
+import android.support.v4.view.ViewPager;
+import android.view.*;
+import android.widget.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.os.AsyncTask;
-import android.content.Context;
-
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
-
-import edu.uchicago.scav.itemendpoint.Itemendpoint;
-import edu.uchicago.scav.itemendpoint.model.Item;
-import edu.uchicago.scav.itemendpoint.Itemendpoint.Builder;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
