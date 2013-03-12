@@ -20,8 +20,8 @@ import com.google.appengine.api.datastore.Email;
 
 @Entity
 public class Player {
-	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Id
+	@GeneratedValue(strategy =GenerationType.IDENTITY)
     private Key key;
 	
     private String userID;
@@ -30,12 +30,12 @@ public class Player {
 	public Email email;
 	public PhoneNumber phoneNumber;
 	public String about;
-	@Persistent
-	public String team;
+	public Team team;
 	
 	public Player(){
 		
 	}
+	
 	public Player(String user, String pass)
 	{
 		this.userID=user;
@@ -93,10 +93,11 @@ public class Player {
 		this.about = stuff;
 	}
 	
-	public String getTeam(){
+	public Team getTeam(){
 		return team;
 	}
-	public void  setTeam(String teamname){
+	
+	public void setTeam(Team teamname){
 		this.team = teamname;
 	}
 

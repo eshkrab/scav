@@ -1,5 +1,6 @@
 package edu.uchicago.scav;
 
+import edu.uchicago.scav.rest.ScavRest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,14 +18,25 @@ import android.widget.Toast;
 
 public class PickTeam extends  Activity
 {
-	String pickedTeam;
+	private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000");
+	static String pickedTeam;
 	final String PREFS_NAME = "ScavPrefsFile";
+	private static String userEmail="0000";
+	private static String userPass="0000";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pick_team);
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+			 userEmail=extras.getString("EMAIL");
+			 userPass=extras.getString("PASS");
+		}
+		else{
+			userEmail="failed to take from Bundle";
+		}
 		// Show the Up button in the action bar.
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
@@ -50,6 +62,7 @@ public class PickTeam extends  Activity
 			{
 				setPickedTeam(dummyTeams[position]);
 				Toast.makeText(getApplicationContext(), "You picked " + getPickedTeam(), Toast.LENGTH_LONG).show();
+				
 			}
 		});
 	}
@@ -62,6 +75,9 @@ public class PickTeam extends  Activity
 	public void setPickedTeam(String team)
 	{
 		pickedTeam = team;
+	}
+	public static void createUser(String email, String pass, String Team){
+		myRest.CreateUser("USER_TEST", "PASS_TEST","TEAM" );
 	}
 
 	@Override
@@ -95,6 +111,8 @@ public class PickTeam extends  Activity
 	{
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		settings.edit().putString("user_team", getPickedTeam()).commit();
+		Toast.makeText(getApplicationContext(), getPickedTeam(), Toast.LENGTH_LONG).show();
+		//createUser(userEmail, userPass, pickedTeam);
 		Intent tabs = new Intent(PickTeam.this, Tabs.class);
 		startActivity(tabs);
 		finish();

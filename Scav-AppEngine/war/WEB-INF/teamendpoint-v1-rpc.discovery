@@ -1,0 +1,259 @@
+{
+ "kind": "discovery#rpcDescription",
+ "etag": "\"2MERlHgXUfSlVQnFAL3vX-58eZg/k-2fhGpHNNJWP_jM17QtJeZOAzs\"",
+ "discoveryVersion": "v1",
+ "id": "teamendpoint:v1",
+ "name": "teamendpoint",
+ "version": "v1",
+ "description": "This is an API",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rpc",
+ "rootUrl": "https://scavapp.appspot.com/_ah/api/",
+ "rpcUrl": "https://scavapp.appspot.com/_ah/api/rpc",
+ "rpcPath": "/_ah/api/rpc",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "schemas": {
+  "CollectionResponse_Team": {
+   "id": "CollectionResponse_Team",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Team"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "Email": {
+   "id": "Email",
+   "type": "object",
+   "properties": {
+    "email": {
+     "type": "string"
+    }
+   }
+  },
+  "Key": {
+   "id": "Key",
+   "type": "object",
+   "properties": {
+    "appId": {
+     "type": "string"
+    },
+    "complete": {
+     "type": "boolean"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "kind": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "namespace": {
+     "type": "string"
+    },
+    "parent": {
+     "$ref": "Key"
+    }
+   }
+  },
+  "PhoneNumber": {
+   "id": "PhoneNumber",
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": "string"
+    }
+   }
+  },
+  "Player": {
+   "id": "Player",
+   "type": "object",
+   "properties": {
+    "about": {
+     "type": "string"
+    },
+    "email": {
+     "$ref": "Email"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "name": {
+     "type": "string"
+    },
+    "number": {
+     "$ref": "PhoneNumber"
+    },
+    "pswd": {
+     "type": "string"
+    },
+    "team": {
+     "$ref": "Team"
+    },
+    "userID": {
+     "type": "string"
+    }
+   }
+  },
+  "Team": {
+   "id": "Team",
+   "type": "object",
+   "properties": {
+    "captain": {
+     "$ref": "Player"
+    },
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "members": {
+     "type": "array",
+     "items": {
+      "$ref": "Player"
+     }
+    },
+    "name": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "methods": {
+  "teamendpoint.getTeam": {
+   "id": "teamendpoint.getTeam",
+   "allowGet": true,
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "returns": {
+    "$ref": "Team"
+   }
+  },
+  "teamendpoint.insertTeam": {
+   "id": "teamendpoint.insertTeam",
+   "parameters": {
+    "resource": {
+     "$ref": "Team"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Team"
+   }
+  },
+  "teamendpoint.listTeam": {
+   "id": "teamendpoint.listTeam",
+   "allowGet": true,
+   "parameters": {
+    "cursor": {
+     "type": "string"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32"
+    }
+   },
+   "returns": {
+    "$ref": "CollectionResponse_Team"
+   }
+  },
+  "teamendpoint.removeTeam": {
+   "id": "teamendpoint.removeTeam",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "returns": {
+    "$ref": "Team"
+   }
+  },
+  "teamendpoint.updateTeam": {
+   "id": "teamendpoint.updateTeam",
+   "parameters": {
+    "resource": {
+     "$ref": "Team"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Team"
+   }
+  }
+ }
+}

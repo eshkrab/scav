@@ -86,12 +86,15 @@ public class Item {
 	public int  getPoints(){
 		return points;
 	}
+	
 	public void  setPoints(int pts){
 		this.points=pts;
 	}
+	
 	public Date  getDuedate(){
 		return duedate;
 	}
+	
 	public void  setDuedate(Date dat){
 		this.duedate=dat;
 	}

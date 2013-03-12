@@ -37,10 +37,6 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 
-import edu.uchicago.scav.itemendpoint.Itemendpoint;
-import edu.uchicago.scav.itemendpoint.model.Item;
-import edu.uchicago.scav.itemendpoint.Itemendpoint.Builder;
-
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
@@ -107,11 +103,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}	
-		//new EndpointsTask().execute(getApplicationContext());
-		
-    	new EndpointsTask().execute(getApplicationContext());
-    	
-    	//GCMIntentService.register(getApplicationContext());	
 		
 	}
 
@@ -270,9 +261,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 		}
 			};
 			
-//		for (int i=0; i < Tabs.getItems().size(); i++)
+		//	for (int i=0; i < Tabs.getItems().size(); i++)
 			{
-//			Item curItem = Tabs.getItems().get(i);
+			//	Item curItem = Tabs.getItems().get(i);
 			//	String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
 			//	adapter.add(itemString);
 			}
@@ -306,15 +297,15 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-//	public static List<Item> getItem()
+/*	public static List<Item> getItems()
 	{
 		// placeholder data, replace with real stuff when possible
-//		List<Item> items = new ArrayList<Item>();
-//		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
-//		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
-//		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
-		//return items;
-	}
+		List<Item> items = new ArrayList<Item>();
+		items.add(new Item("Nuclear reactor", "Build a nuclear reactor"));
+		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
+		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
+		return items;
+	}*/
 	
 	public static String getTeam()
 	{
@@ -323,34 +314,5 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		return team;
 	}
 
-	public class EndpointsTask extends AsyncTask<Context, Integer, Long> {
-
-        protected Long doInBackground(Context... contexts) {
-        	
-               Itemendpoint.Builder endpointBuilder = new Itemendpoint.Builder(
-            	        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-            	        new HttpRequestInitializer() {
-            	          public void initialize(HttpRequest httpRequest) {
-            	          }
-            	        });
-      Itemendpoint endpoint;
-      endpoint = endpointBuilder.build(); 
-      try {
-          Item item = new Item();
-          item.setId((long) 5432);
-          item.setDescription("items items staplers 2");
-          item.setNumber(1);
-          Item result = endpoint.insertItem(item).execute();
-          error = item.getDescription();
-      } catch (IOException e) {
-        e.printStackTrace();
-        error = "fatal error";
-      } 
-         return (long) 0;
-      }
-        protected void onPostExecute(Long result) {
-        	Toast.makeText(Scav.getApp(), error, Toast.LENGTH_LONG).show();
-        }
-    }
 
 }

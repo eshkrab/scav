@@ -18,12 +18,14 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
 public class LoginActivity extends Activity {
+	
 	/**
 	 * A dummy authentication store containing known user names and passwords.
 	 * TODO: remove after connecting to a real authentication system.
@@ -54,9 +56,6 @@ public class LoginActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		//Google Could Reg
-		//GCMIntentService.register(Scav.getApp());
-		
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_login);
@@ -88,6 +87,7 @@ public class LoginActivity extends Activity {
 					}
 				}
 			}
+			
 		});
 
 		mPasswordView = (EditText) findViewById(R.id.password);
@@ -292,6 +292,8 @@ public class LoginActivity extends Activity {
 
 			if (success) {
 				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
+				pickTeam.putExtra("EMAIL", mEmail);
+				pickTeam.putExtra("PASS", mPassword);
 				startActivity(pickTeam);
 				finish();
 			} else {

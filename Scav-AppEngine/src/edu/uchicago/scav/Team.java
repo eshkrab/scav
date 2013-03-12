@@ -25,19 +25,17 @@ import com.google.appengine.api.datastore.Key;
 
 @Entity
 public class Team {
-	
-	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
 	private String name;
 	private String description;
-	@Persistent(mappedBy = "team")
 	private Player captain;
-	@Persistent(mappedBy = "team")
+	
+	@OneToMany(mappedBy="team")
 	public List<Player> members;
 
-	
 	public Team()
 	{
 		
@@ -79,10 +77,4 @@ public class Team {
 	public List<Player>  getMembers(){
 		return members;
 	}
-			
-	@ApiMethod
-	//Add member method
-		public void addMember(Player member){
-			this.members.add(member);
-		}
 }
