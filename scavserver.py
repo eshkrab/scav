@@ -72,7 +72,7 @@ def create_team():
 @app.route("/createItem", methods = ['POST'])
 def create_item():
 	"""
-	Needs: access_key, item_name, number, description
+	Needs: access_key, item_name, number, description, points
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
@@ -80,7 +80,8 @@ def create_item():
 	number = cur_request['number']
 	item_name = cur_request["name"]
 	description = cur_request["description"]
-	database["items"][number] = {'name': item_name, 'description': description}
+	points = cur_request["points"]
+	database["items"][number] = {'name': item_name, 'description': description, 'points' : points}
 	print('creating item: {0}'.format(item_name))
 	save_database()
 	return success_message
@@ -115,6 +116,21 @@ def get_team():
 	except KeyError:
 		return no_team_error
 	return json.dumps(team)
+	
+@app.route('/getItem', methods=['POST'])
+def get_team():
+	"""
+	Needs: access_key, number
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_acccess_key_error
+	number = cur_request['number']
+	try:
+		team = database['items'][number]
+	except KeyError:
+		return no_team_error
+	return json.dumps(item)
 
 @app.route("/getAllUsers")
 def list_users():
