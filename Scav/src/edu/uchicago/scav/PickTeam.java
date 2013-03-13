@@ -16,6 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import android.os.AsyncTask;
+
 public class PickTeam extends  Activity
 {
 	private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000", Scav.accessKey);
@@ -76,9 +79,7 @@ public class PickTeam extends  Activity
 	{
 		pickedTeam = team;
 	}
-	public static void createUser(String email, String pass, String Team){
-		myRest.CreateUser("USER_TEST", "PASS_TEST","TEAM" );
-	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -106,13 +107,70 @@ public class PickTeam extends  Activity
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	private class CreateUser extends AsyncTask<HashMap<String, String>, Void, String>
+	{
+
+		@Override
+		protected String doInBackground(HashMap<String, String>...hashMaps)
+		{
+			try
+			{
+				ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+				HashMap<String, String> user = hashMaps[0];
+				myRest.createUser(user.get("cnetid"), user.get("password"), user.get("team"));
+				Scav.userStatus = "success";
+				return null;
+			}
+			catch (Exception e)
+			{
+				Scav.userStatus = "fail because " + e.toString();
+				return null;
+			}
+		}
+	}
+	
+	private class GetTeams extends AsyncTask<HashMap<String, String>, Void, String>
+	{
+
+			@Override
+			protected String doInBackground(HashMap<String, String>...hashMaps)
+			{
+				try
+				{
+					ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+					HashMap<String, String> user = hashMaps[0];
+					myRest.createUser(user.get("cnetid"), user.get("password"), user.get("team"));
+					Scav.userStatus = "success";
+					return null;
+				}
+				catch (Exception e)
+				{
+					Scav.userStatus = "fail because " + e.toString();
+					return null;
+				}
+		}
+		
+		@Override
+		protected void onPostExecute(String result)
+		{
+			Scav.userStatus = "execution " + Scav.userStatus;
+		}
+
+	}
 	
 	public void next(View v)
 	{
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		settings.edit().putString("user_team", getPickedTeam()).commit();
-		Toast.makeText(getApplicationContext(), getPickedTeam(), Toast.LENGTH_LONG).show();
-		//createUser(userEmail, userPass, pickedTeam);
+		
+		HashMap<String, String> userData = new HashMap<String, String>();
+        userData.put("access_key", Scav.accessKey);
+        userData.put("cnetid", userEmail);
+        userData.put("password", userPass);
+        userData.put("team", "Team1");
+		
+        new CreateUser().execute(userData);
+		
 		Intent tabs = new Intent(PickTeam.this, Tabs.class);
 		startActivity(tabs);
 		finish();

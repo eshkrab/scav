@@ -282,14 +282,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	//public static List<Item> getItems()
+	public static List<Item> getItems()
 	{
 		// placeholder data, replace with real stuff when possible
-	//	List<Item> items = new ArrayList<Item>();
-	//	items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
-	//	items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
-	//	items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
-	//	return items;
+		List<Item> items = new ArrayList<Item>();
+		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor"));
+		items.add(new Item(2, "Colourful piano", "Make a colourful piano"));
+		items.add(new Item(3, "Mr. President", "Win presidential elections in any country"));
+		return items;
 	}
 	
 	public static String getTeam()

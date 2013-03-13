@@ -24,9 +24,6 @@ import android.view.Menu;
 
 public class MainActivity extends Activity
 {
-	 private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000", Scav.accessKey);
-
-	
 	final String PREFS_NAME = "ScavPrefsFile";
 			
     @Override
@@ -38,7 +35,6 @@ public class MainActivity extends Activity
         Intent login = new Intent(MainActivity.this, LoginActivity.class);
         Intent tabs = new Intent(MainActivity.this, Tabs.class);
         
-       // myRest.CreateUser("myCNET", "myLovelyPass",  "Suckers");
         
     	if (settings.getBoolean("first_launch", true)) 
     	{

@@ -1,5 +1,6 @@
 package edu.uchicago.scav;
 
+import edu.uchicago.scav.R.string;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,11 +46,11 @@ public class LoginActivity extends Activity {
 	private UserLoginTask mAuthTask = null;
 
 	// Values for email and password at the time of the login attempt.
-	private String mEmail;
+	private String mCnet;
 	private String mPassword;
 
 	// UI references.
-	private EditText mEmailView;
+	private EditText mCnetView;
 	private EditText mPasswordView;
 	private View mLoginFormView;
 	private View mLoginStatusView;
@@ -62,11 +64,11 @@ public class LoginActivity extends Activity {
 		setupActionBar();
 
 		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.email);
-		mEmailView.setText(mEmail);
+		mCnet = getIntent().getStringExtra(EXTRA_EMAIL);
+		mCnetView = (EditText) findViewById(R.id.email);
+		mCnetView.setText(mCnet);
 		
-/*		mEmailView.setOnClickListener(new View.OnClickListener() {
+/*		mCnetView.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -74,16 +76,22 @@ public class LoginActivity extends Activity {
 			}	
 		});*/
 		
-		mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {	
+		mCnetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {	
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (!hasFocus)
 				{
 					Editable email = ((EditText) findViewById(R.id.email)).getText();
 					String enteredText = email.toString();
-					if (!enteredText.contains("@uchicago.edu"))
+					if (enteredText.contains("@uchicago.edu"))
 					{
-						((EditText) findViewById(R.id.email)).setText(enteredText + "@uchicago.edu");
+						String cnet = enteredText.split("@")[0];
+						((EditText) findViewById(R.id.email)).setText(cnet);
+					} else if (enteredText.contains("@"))
+					{
+						Toast cnetAlert = Toast.makeText(getApplicationContext(), R.string.cnet_alert, (Toast.LENGTH_LONG + 10));
+						cnetAlert.setGravity(Gravity.TOP, 0, 200);
+						cnetAlert.show();
 					}
 				}
 			}
@@ -170,11 +178,11 @@ public class LoginActivity extends Activity {
 		}
 
 		// Reset errors.
-		mEmailView.setError(null);
+		mCnetView.setError(null);
 		mPasswordView.setError(null);
 
 		// Store values at the time of the login attempt.
-		mEmail = mEmailView.getText().toString();
+		mCnet = mCnetView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
 
 		boolean cancel = false;
@@ -192,13 +200,9 @@ public class LoginActivity extends Activity {
 		}
 
 		// Check for a valid email address.
-		if (TextUtils.isEmpty(mEmail)) {
-			mEmailView.setError(getString(R.string.error_field_required));
-			focusView = mEmailView;
-			cancel = true;
-		} else if (!mEmail.contains("@")) {
-			mEmailView.setError(getString(R.string.error_invalid_email));
-			focusView = mEmailView;
+		if (TextUtils.isEmpty(mCnet)) {
+			mCnetView.setError(getString(R.string.error_field_required));
+			focusView = mCnetView;
 			cancel = true;
 		}
 
@@ -275,7 +279,7 @@ public class LoginActivity extends Activity {
 
 			for (String credential : DUMMY_CREDENTIALS) {
 				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
+				if (pieces[0].equals(mCnet)) {
 					// Account exists, return true if the password matches.
 					return pieces[1].equals(mPassword);
 				}
@@ -292,7 +296,7 @@ public class LoginActivity extends Activity {
 
 			if (success) {
 				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
-				pickTeam.putExtra("EMAIL", mEmail);
+				pickTeam.putExtra("EMAIL", mCnet);
 				pickTeam.putExtra("PASS", mPassword);
 				startActivity(pickTeam);
 				finish();

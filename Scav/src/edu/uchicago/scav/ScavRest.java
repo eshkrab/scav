@@ -1,15 +1,12 @@
 package edu.uchicago.scav;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,18 +14,15 @@ import org.json.JSONObject;
 
 import org.apache.http.HttpResponse;
 
-import android.app.Activity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ScavRest extends Activity
+public class ScavRest
 {
     private final String aHostName;
     private final String aAccessKey;
@@ -48,7 +42,7 @@ public class ScavRest extends Activity
         this.aAccessKey = aAccessKey;
     }
 
-    public JSONObject CreateUser(String aCnetID, String aPassword, String aTeam) {
+    public JSONObject createUser(String aCnetID, String aPassword, String aTeam) {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
@@ -62,7 +56,7 @@ public class ScavRest extends Activity
         return new JSONObject();
     }
 
-    public JSONObject CreateTeam(String aTeam) {
+    public JSONObject createTeam(String aTeam) {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("team", aTeam);
@@ -116,7 +110,7 @@ public class ScavRest extends Activity
 
     public List<User> getUsers() {
         JSONObject myObject = MakeGetRequest(aHostName, theGetAllUsersAddress);
-        Iterator myKeys = myObject.keys();
+        Iterator<?> myKeys = myObject.keys();
         List<User> myUsers = new ArrayList<User>();
         try {
             while(myKeys.hasNext()) {
@@ -136,7 +130,7 @@ public class ScavRest extends Activity
 
     public List<Team> getTeams() {
         JSONObject myObject = MakeGetRequest(aHostName, theGetAllTeamsAddress);
-        Iterator myKeys = myObject.keys();
+        Iterator<?> myKeys = myObject.keys();
         List<Team> myTeams = new ArrayList<Team>();
 
         try {
@@ -161,7 +155,6 @@ public class ScavRest extends Activity
 
     public List<Item> getItems() {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
-        Iterator myKeys = allItems.keys();
         List<Item> myItems = new ArrayList<Item>();
 
         try {

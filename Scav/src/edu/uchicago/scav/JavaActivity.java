@@ -14,8 +14,8 @@ public class JavaActivity {
         for(int i = 1; i < 11; i++)
         {
             myRest.createItem(i, "Item" + i, "Description" + i);
-            myRest.CreateTeam("Team" + i);
-            myRest.CreateUser("user" + i + "@uchicago.edu", "Password" + i,  "Team" + i);
+            myRest.createTeam("Team" + i);
+            myRest.createUser("user" + i + "@uchicago.edu", "Password" + i,  "Team" + i);
         }
 
         JSONObject user = myRest.getUser("user1@uchicago.edu", "Password1");

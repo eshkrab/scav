@@ -15,5 +15,6 @@
     <string name="error_field_required">This field is required</string>
     <string name="uchicago_email">"@uchicago.edu"</string>
     <string name="pretend">Pretend I registered</string>
+    <string name="cnet_alert">This has to be your CNet ID, not some other random email. Like &quot;zimmer@uchicago.edu&quot;, but without the &quot;@uchicago.edu&quot; part.</string>
 
 </resources>
