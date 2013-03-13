@@ -1,20 +1,46 @@
 package edu.uchicago.scav;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.json.JSONObject;
+
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.jackson.JacksonFactory;
+
+
+import edu.uchicago.scav.rest.*;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
 
+
 public class MainActivity extends Activity
 {
+	 private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000");
+
 	
 	final String PREFS_NAME = "ScavPrefsFile";
 			
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+/* 
+    	 for(int i = 10; i < 20; i++) {
+             myRest.CreateItem("Item" + i, "Description" + i);
+             myRest.CreateTeam("Team" + i);
+             myRest.CreateUser("user" + i + "@uchicago.edu", "Password" + i,  "Team" + i);
+         }*/
+     
+    		
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         
@@ -43,4 +69,7 @@ public class MainActivity extends Activity
 		return true;
 	}
     
-}
+    
+   
+    }
+
