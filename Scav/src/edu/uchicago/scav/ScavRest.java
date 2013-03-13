@@ -16,6 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.apache.http.HttpResponse;
+
+import android.app.Activity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ScavRest
+public class ScavRest extends Activity
 {
     private final String aHostName;
     private final String aAccessKey;

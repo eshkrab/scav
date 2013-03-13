@@ -246,11 +246,11 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 		}
 			};
 			
-			for (int i=0; i < Tabs.getItems().size(); i++)
+		//	for (int i=0; i < Tabs.getItems().size(); i++)
 			{
-				Item curItem = Tabs.getItems().get(i);
-				String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
-				adapter.add(itemString);
+		//		Item curItem = Tabs.getItems().get(i);
+		//		String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
+		//		adapter.add(itemString);
 			}
 			
 			
@@ -261,7 +261,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
-					Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
+		//			Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
 				}
 			});
 			
@@ -282,14 +282,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	public static List<Item> getItems()
+	//public static List<Item> getItems()
 	{
 		// placeholder data, replace with real stuff when possible
-		List<Item> items = new ArrayList<Item>();
-		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
-		items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
-		items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
-		return items;
+	//	List<Item> items = new ArrayList<Item>();
+	//	items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor", "available", 15));
+	//	items.add(new Item(2, "Colourful piano", "Make a colourful piano", "claimed", 25));
+	//	items.add(new Item(3, "Mr. President", "Win presidential elections in any country", "done", 30));
+	//	return items;
 	}
 	
 	public static String getTeam()

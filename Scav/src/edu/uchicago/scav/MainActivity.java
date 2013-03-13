@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
+/*import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
+*/
 
-
-import edu.uchicago.scav.rest.*;
-
+//import edu.uchicago.scav.*;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,7 @@ import android.view.Menu;
 
 public class MainActivity extends Activity
 {
-	 private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000");
+	 private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000", Scav.accessKey);
 
 	
 	final String PREFS_NAME = "ScavPrefsFile";
@@ -33,26 +32,20 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-/* 
-    	 for(int i = 10; i < 20; i++) {
-             myRest.CreateItem("Item" + i, "Description" + i);
-             myRest.CreateTeam("Team" + i);
-             myRest.CreateUser("user" + i + "@uchicago.edu", "Password" + i,  "Team" + i);
-         }*/
-     
-    		
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         
         Intent login = new Intent(MainActivity.this, LoginActivity.class);
         Intent tabs = new Intent(MainActivity.this, Tabs.class);
-    	
+        
+       // myRest.CreateUser("myCNET", "myLovelyPass",  "Suckers");
+        
     	if (settings.getBoolean("first_launch", true)) 
     	{
     		
     		startActivity(login);
     		settings.edit().putBoolean("first_launch", false).commit();
-    		startActivity(tabs);
+    		//startActivity(tabs);
     		//finish();
     	}
     	else

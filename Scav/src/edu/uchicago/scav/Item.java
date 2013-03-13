@@ -1,4 +1,4 @@
-package edu.uchicago.scav.rest;
+package edu.uchicago.scav;
 
 public class Item {
     public final int aNumber;

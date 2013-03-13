@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public class PickTeam extends  Activity
 {
-	private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000");
+	private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000", Scav.accessKey);
 	static String pickedTeam;
 	final String PREFS_NAME = "ScavPrefsFile";
 	private static String userEmail="0000";
