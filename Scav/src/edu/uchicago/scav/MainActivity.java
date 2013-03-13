@@ -7,8 +7,8 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 
-import edu.uchicago.scav.itemendpoint.Itemendpoint;
-import edu.uchicago.scav.itemendpoint.model.Item;
+//import edu.uchicago.scav.itemendpoint.Itemendpoint;
+//import edu.uchicago.scav.itemendpoint.model.Item;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +28,9 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
  
-    		
+    	
+    	//GCMIntentService.register(getApplicationContext());
+    	
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         
@@ -48,6 +50,7 @@ public class MainActivity extends Activity
     		startActivity(tabs);
     	}
     	setContentView(R.layout.activity_main);
+    
     }
     
     @Override

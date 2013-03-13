@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "scavapp-deviceinfoendpoint-v1-20130309191405-java-1.13.2-beta-sources.jar", 
+      "path": "scavapp-deviceinfoendpoint-v1-20130311181048-java-1.13.2-beta-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "scavapp-deviceinfoendpoint-v1-20130309191405-java-1.13.2-beta.jar.properties", 
+      "path": "scavapp-deviceinfoendpoint-v1-20130311181048-java-1.13.2-beta.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -690,7 +690,7 @@
     }
   ], 
   "language_version": "1.13.2-beta", 
-  "revision": 20130309191405, 
+  "revision": 20130311181048, 
   "id": "deviceinfoendpoint:v1", 
   "name": "deviceinfoendpoint"
 }
