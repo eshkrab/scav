@@ -1,4 +1,8 @@
 #!/usr/bin/env python2.7
+"""
+@about Flask server for the Scav app
+@author Placeholder Studios
+"""
 
 from __future__ import print_function
 from flask import Flask, request
@@ -8,7 +12,11 @@ app = Flask(__name__)
 
 database = {}
 dbfile = "scavdb.json"
-successMessage = json.dumps({"status" : "success"})
+
+access_key = open('acess_key').read()
+
+success_message = json.dumps({"status" : "success"})
+illegal_access_key_error = json.dumps({'status': 'error', 'message': 'illegal access key'})
 no_team_error = json.dumps({'status': 'error', 'message': 'no such team'})
 login_incorrect_error = json.dumps({'status': 'error', 'message': 'login data incorrect'})
 
@@ -30,54 +38,63 @@ def home():
 
 @app.route("/createUser", methods = ['POST'])
 def create_user():
-	if request.json is None:
-		cnetid = request.form['cnetid']
-		pass_hash = hashify(request.form['password'])
-		team = request.form['team']
-	else:
-		cnetid = request.json["cnetid"]
-		pass_hash = hashify(request.json['password'])
-		team = request.json["team"]
+	"""
+	Needs: access_key, cnetid, password, team
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_access_key_error
+	cnetid = cur_request["cnetid"]
+	pass_hash = hashify(cur_request['password'])
+	team = cur_request["team"]
 	if(team not in database["teams"]):
 		return no_team_error
 	database["users"][cnetid] = {"cnetid" :cnetid, "pass_hash": pass_hash, "team" : team}
 	database["teams"][team].append(cnetid)
 	print('creating user: {0}'.format(cnetid))
 	save_database()
-	return successMessage
+	return success_message
 
 @app.route("/createTeam", methods = ['POST'])
 def create_team():
-	if request.json is None:
-		team = request.form['team']
-	else:
-		team = request.json['team']
+	"""
+	Needs: access_key, team (name)
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_access_key_error
+	team = cur_request['team']
 	database["teams"][team] = []
 	print('creating team: {0}'.format(team))
 	save_database()
-	return successMessage
+	return success_message
 
 @app.route("/createItem", methods = ['POST'])
 def create_item():
-	if request.json is None:
-		item = request.form['item']
-		description = request.form['description']
-	else:
-		item = request.json["item"]
-		description = request.json["description"]
-	database["items"][item] = description
-	print('creating item: {0}'.format(item))
+	"""
+	Needs: access_key, item_name, number, description
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_access_key_error
+	number = cur_request['number']
+	item_name = cur_request["name"]
+	description = cur_request["description"]
+	database["items"][number] = {'name': item_name, 'description': description}
+	print('creating item: {0}'.format(item_name))
 	save_database()
-	return successMessage
+	return success_message
 
 @app.route('/getUser', methods=['POST'])
 def get_user():
-	if request.json is None:
-		cnetid = request.form['cnetid']
-		password = request.form['password']
-	else:
-		cnetid = request.json['cnetid']
-		password = request.json['password']
+	"""
+	Needs: access_key, cnetid, password
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_access_key_error
+	cnetid = cur_request['cnetid']
+	password = cur_request['password']
 	user = database['users'][cnetid]
 	if hashify(password) == user['pass_hash']:
 		return json.dumps(user)
@@ -86,10 +103,13 @@ def get_user():
 
 @app.route('/getTeam', methods=['POST'])
 def get_team():
-	if request.json is None:
-		teamname = request.form['team']
-	else:
-		teamname = request.json['team']
+	"""
+	Needs: access_key, teamname
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_acccess_key_error
+	teamname = cur_request['team']
 	try:
 		team = database['teams'][teamname]
 	except KeyError:
@@ -98,6 +118,7 @@ def get_team():
 
 @app.route("/getAllUsers")
 def list_users():
+	# so this most likely will need to be changed in the future because the current version does not check for access key, as it is a GET request
 	return json.dumps(database["users"])
 
 @app.route("/getTeams")
