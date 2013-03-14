@@ -399,8 +399,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
 					try{
-						Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
-						itemActivity.putExtra("itemNumber", items.get(position).aNumber);
+						//Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
+						//itemActivity.putExtra("itemNumber", items.get(position).aNumber);
 						//startActivity(itemActivity);
 					} catch (Exception e)
 					{
