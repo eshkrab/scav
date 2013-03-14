@@ -4,7 +4,7 @@ class User
 {
     public final String aCnetID;
     public final String aPassword;
-    public final String aTeamName;
+    public String aTeamName;
 
     public User(String aCnetID, String aPassword, String aTeamName)
     {

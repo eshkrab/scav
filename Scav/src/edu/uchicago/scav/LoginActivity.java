@@ -1,17 +1,18 @@
 package edu.uchicago.scav;
 
-import edu.uchicago.scav.R.string;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -65,7 +66,7 @@ public class LoginActivity extends Activity {
 
 		// Set up the login form.
 		mCnet = getIntent().getStringExtra(EXTRA_EMAIL);
-		mCnetView = (EditText) findViewById(R.id.email);
+		mCnetView = (EditText) findViewById(R.id.cnet);
 		mCnetView.setText(mCnet);
 		
 /*		mCnetView.setOnClickListener(new View.OnClickListener() {
@@ -81,12 +82,12 @@ public class LoginActivity extends Activity {
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (!hasFocus)
 				{
-					Editable email = ((EditText) findViewById(R.id.email)).getText();
+					Editable email = ((EditText) findViewById(R.id.cnet)).getText();
 					String enteredText = email.toString();
 					if (enteredText.contains("@uchicago.edu"))
 					{
 						String cnet = enteredText.split("@")[0];
-						((EditText) findViewById(R.id.email)).setText(cnet);
+						((EditText) findViewById(R.id.cnet)).setText(cnet);
 					} else if (enteredText.contains("@"))
 					{
 						Toast cnetAlert = Toast.makeText(getApplicationContext(), R.string.cnet_alert, (Toast.LENGTH_LONG + 10));
@@ -267,26 +268,22 @@ public class LoginActivity extends Activity {
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
-		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
-
-			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
+		protected Boolean doInBackground(Void... params) 
+		{
+			
+			Boolean userExists = new ScavRest(Scav.serverURL, Scav.accessKey).userExists(mCnet, mPassword);
+			
+			if (userExists)
+			{
+				SharedPreferences sharedPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+				sharedPrefs.edit().putString("cnet", mCnet).commit();
+				return true;
+			}
+			else
+			{
 				return false;
 			}
 
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mCnet)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
-			}
-
-			// TODO: register the new account here.
-			return true;
 		}
 
 		@Override
@@ -295,15 +292,14 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
-				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
-				pickTeam.putExtra("EMAIL", mCnet);
-				pickTeam.putExtra("PASS", mPassword);
-				startActivity(pickTeam);
+				Intent tabs = new Intent(LoginActivity.this, Tabs.class);
+				startActivity(tabs);
 				finish();
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
+				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
+				pickTeam.putExtra("cnet", mCnet);
+				pickTeam.putExtra("password", mPassword);
+				startActivity(pickTeam);
 			}
 		}
 

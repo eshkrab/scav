@@ -1,12 +1,18 @@
 package edu.uchicago.scav;
 
-import edu.uchicago.scav.ScavRest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,18 +20,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.HashMap;
-import android.os.AsyncTask;
-
-public class PickTeam extends  Activity
+public class PickTeam extends Activity
 {
-	private static final ScavRest myRest = new ScavRest("http://raspi.ostensible.me:5000", Scav.accessKey);
-	static String pickedTeam;
-	final String PREFS_NAME = "ScavPrefsFile";
-	private static String userEmail="0000";
-	private static String userPass="0000";
+	private static final ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+	static String myTeam;
+	static String myCNet;
+	static String myPassword;
+	static List<String> myTeams;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -33,52 +36,41 @@ public class PickTeam extends  Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pick_team);
 		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			 userEmail=extras.getString("EMAIL");
-			 userPass=extras.getString("PASS");
-		}
-		else{
-			userEmail="failed to take from Bundle";
-		}
+		myCNet = extras.getString("cnet");
+		myPassword = extras.getString("password");
+		
 		// Show the Up button in the action bar.
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		// fill the view with a list of teams
-		createTeamList();
+		try {
+			createTeamList();
+		} catch (InterruptedException e) {
+			Log.e("error", e.toString());
+		} catch (ExecutionException e) {
+			Log.e("error", e.toString());
+		}
 	}
 	
-	// creates a list of teams, currently dummies
-	public void createTeamList()
+	// creates a list of teams
+	public void createTeamList() throws InterruptedException, ExecutionException
 	{
 		ListView teamView = (ListView) findViewById(R.id.team_list);
-		
-		// dummy team list, later to be replaced with real data fetched from the server
-		final String[] dummyTeams = new String[] {"Snitchcock", "BJ", "The Outsiders", "Placeholder Studios"};
-		
+		new PickTeam.getTeams();
+		final List<String> teams = myTeams;
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-				android.R.id.text1, dummyTeams);
+				android.R.id.text1, teams);
 		teamView.setAdapter(adapter);
 		teamView.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				setPickedTeam(dummyTeams[position]);
-				Toast.makeText(getApplicationContext(), "You picked " + getPickedTeam(), Toast.LENGTH_LONG).show();
-				
+				myTeam = teams.get(position);
 			}
 		});
 	}
 	
-	public String getPickedTeam()
-	{
-		return pickedTeam;
-	}
-	
-	public void setPickedTeam(String team)
-	{
-		pickedTeam = team;
-	}
 	
 
 	@Override
@@ -107,69 +99,58 @@ public class PickTeam extends  Activity
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	private class CreateUser extends AsyncTask<HashMap<String, String>, Void, String>
+	
+	private class getTeams extends AsyncTask<Void, Void, Void>
 	{
-
+			@Override
+			protected Void doInBackground(Void...params)
+			{
+				ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+				Log.d("status", "I get here");
+				List<Team> allTeams = myRest.getTeams();
+				List<String> teamNames = new ArrayList<String>();
+				
+				for (int i = 0; i < allTeams.size(); i++)
+				{
+					teamNames.add(allTeams.get(i).aTeamName);
+					Log.d("team", allTeams.get(i).aTeamName);
+				}
+				
+				myTeams = teamNames;
+				return null;
+			}
+			
+	}
+	
+	private class createUser extends AsyncTask<HashMap<String, String>, Void, String>
+	{
 		@Override
 		protected String doInBackground(HashMap<String, String>...hashMaps)
 		{
-			try
-			{
-				ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
-				HashMap<String, String> user = hashMaps[0];
-				myRest.createUser(user.get("cnetid"), user.get("password"), user.get("team"));
-				Scav.userStatus = "success";
-				return null;
-			}
-			catch (Exception e)
-			{
-				Scav.userStatus = "fail because " + e.toString();
-				return null;
-			}
+			HashMap<String, String> user = hashMaps[0];
+			String cnet = user.get("cnet");
+			String password = user.get("password");
+			String team = user.get("team");
+			myRest.createUser(cnet, password, team);
+			return null;
+			
 		}
-	}
-	
-	private class GetTeams extends AsyncTask<HashMap<String, String>, Void, String>
-	{
-
-			@Override
-			protected String doInBackground(HashMap<String, String>...hashMaps)
-			{
-				try
-				{
-					ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
-					HashMap<String, String> user = hashMaps[0];
-					myRest.createUser(user.get("cnetid"), user.get("password"), user.get("team"));
-					Scav.userStatus = "success";
-					return null;
-				}
-				catch (Exception e)
-				{
-					Scav.userStatus = "fail because " + e.toString();
-					return null;
-				}
-		}
-		
-		@Override
-		protected void onPostExecute(String result)
-		{
-			Scav.userStatus = "execution " + Scav.userStatus;
-		}
-
 	}
 	
 	public void next(View v)
 	{
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		settings.edit().putString("user_team", getPickedTeam()).commit();
+		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+		scavPrefs.edit().putString("team", myTeam).commit();
 		
 		HashMap<String, String> userData = new HashMap<String, String>();
-        userData.put("access_key", Scav.accessKey);
-        userData.put("cnetid", userEmail);
-        userData.put("password", userPass);
-        userData.put("team", "Team1");
 		
-        new CreateUser().execute(userData);
+        userData.put("cnetid", myCNet);
+        userData.put("password", myPassword);
+        userData.put("team", myTeam);
+		
+        new createUser().execute(userData);
+        
+        scavPrefs.edit().putBoolean("first_launch", false).commit();
 		
 		Intent tabs = new Intent(PickTeam.this, Tabs.class);
 		startActivity(tabs);

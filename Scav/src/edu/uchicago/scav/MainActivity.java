@@ -24,21 +24,20 @@ import android.view.Menu;
 
 public class MainActivity extends Activity
 {
-	final String PREFS_NAME = "ScavPrefsFile";
 			
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(Scav.PREFS_NAME, 0);
         
-        Intent login = new Intent(MainActivity.this, LoginActivity.class);
+        
         Intent tabs = new Intent(MainActivity.this, Tabs.class);
         
         
     	if (settings.getBoolean("first_launch", true)) 
     	{
-    		
+    		Intent login = new Intent(MainActivity.this, LoginActivity.class);
     		startActivity(login);
     		settings.edit().putBoolean("first_launch", false).commit();
     		//startActivity(tabs);
@@ -60,5 +59,5 @@ public class MainActivity extends Activity
     
     
    
-    }
+}
 

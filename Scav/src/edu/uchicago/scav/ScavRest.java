@@ -95,12 +95,35 @@ public class ScavRest
 
         return new JSONObject();
     }
+    
+    public Boolean userExists(String aCnetID, String aPassword)
+    {
+    	JSONObject result = null;
+    	try {
+    		JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
+                                                  .put("cnetid", aCnetID)
+                    .put("password", aPassword);
+    		result =  MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
+    	} catch (JSONException e) {
+            return false;
+        }
+    	
+		try {
+			result.getString("cnet");
+			return true;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
+
+    }
 
     public JSONObject getTeam(String aTeam)
     {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("team", aTeam);
+            return MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -180,13 +203,16 @@ public class ScavRest
 
             HttpResponse response = client.execute(postRequest);
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-            String aReadline = br.readLine();
-            return new JSONObject();
+            String output = br.readLine();
+            
+            return new JSONObject(output);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (JSONException e) {
+			e.printStackTrace();
+		}
 
         return new JSONObject();
     }

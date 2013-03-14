@@ -13,10 +13,9 @@ public class Scav extends Application
 	public final static String serverURL = "http://raspi.ostensible.me:5000";
 	public final static String accessKey = "8ee420fabd4c8c52763bed";
 
-	static Application app;
-	static String PREFS_NAME = "ScavPrefsFile";
+	public static Application app;
+	public static String PREFS_NAME = "ScavPrefsFile";
 	
-	public static String userStatus;
 	
 	public void onCreate()
 	{
@@ -28,9 +27,5 @@ public class Scav extends Application
 		return app;
 	}
 	
-	public static String getPrefsName()
-	{
-		return PREFS_NAME;
-	}
 
 }

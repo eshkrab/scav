@@ -294,7 +294,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	public static String getTeam()
 	{
-		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.getPrefsName(), 0);
+		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
 		String team = settings.getString("user_team", "none");
 		return team;
 	}
