@@ -1,5 +1,15 @@
 package edu.uchicago.scav;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -12,15 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.apache.http.HttpResponse;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import android.util.Log;
 
 public class ScavRest
 {
@@ -112,10 +114,9 @@ public class ScavRest
         }
     	
 		try {
-			result.getString("cnet");
-			return true;
+				result.get("email");
+				return true;
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			return false;
 		}
 
@@ -128,7 +129,7 @@ public class ScavRest
                                                   .put("team", aTeam);
             return MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("JSON error", e.toString());
         }
 
         return new JSONObject();

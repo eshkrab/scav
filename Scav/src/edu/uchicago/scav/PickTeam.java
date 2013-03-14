@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutionException;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -154,13 +156,27 @@ public class PickTeam extends Activity
         
         scavPrefs.edit().putString("cnetid", myCNet).commit();
 		
-        new createUser().execute(userData);
+        try
+        {
+        	new createUser().execute(userData);
+            
+            scavPrefs.edit().putBoolean("first_launch", false).commit();
+    		
+    		Intent tabs = new Intent(PickTeam.this, Tabs.class);
+    		startActivity(tabs);
+    		finish();
+        }
+        catch (Exception e)
+        {
+        	final AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
+        	builder.setPositiveButton(R.string.ok_dialog, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+               
+                	AlertDialog dialog = builder.create();
+                });
+        }
         
-        scavPrefs.edit().putBoolean("first_launch", false).commit();
-		
-		Intent tabs = new Intent(PickTeam.this, Tabs.class);
-		startActivity(tabs);
-		finish();
 	}
 	
 	public void createNewTeam(View v)

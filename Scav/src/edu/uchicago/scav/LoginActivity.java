@@ -1,9 +1,13 @@
 package edu.uchicago.scav;
 
+import java.util.concurrent.ExecutionException;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -217,8 +221,44 @@ public class LoginActivity extends Activity {
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			
+			try {
+				// check if the user exists and return a dialog box if not
+				Boolean result = mAuthTask.execute((Void) null).get();
+				if (!result)
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setMessage(R.string.no_user_found_text);
+					builder.setTitle(R.string.no_user_found_title);
+					builder.setPositiveButton(R.string.new_user_button, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   // go to register them
+				               registerNewUser();
+				           }
+				       });
+					builder.setNegativeButton(R.string.made_mistake_login,  new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				           }
+				       });
+					AlertDialog dialog = builder.create();
+					dialog.show();
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	protected void registerNewUser()
+	{
+		Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
+		pickTeam.putExtra("cnet", mCnet);
+		pickTeam.putExtra("password", mPassword);
+		startActivity(pickTeam);
 	}
 
 	/**
@@ -272,6 +312,7 @@ public class LoginActivity extends Activity {
 		{
 			
 			Boolean userExists = new ScavRest(Scav.serverURL, Scav.accessKey).userExists(mCnet, mPassword);
+			Log.d("user exists", userExists.toString());
 			
 			if (userExists)
 			{
@@ -295,18 +336,6 @@ public class LoginActivity extends Activity {
 				Intent tabs = new Intent(LoginActivity.this, Tabs.class);
 				startActivity(tabs);
 				finish();
-			} else {
-				try{
-					Log.d("message", "so I get here and then...");
-					Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
-					pickTeam.putExtra("cnet", mCnet);
-					pickTeam.putExtra("password", mPassword);
-					startActivity(pickTeam);
-				} catch (Exception e)
-				{
-					Log.e("error in login", e.toString());
-				}
-				
 			}
 		}
 
@@ -315,5 +344,7 @@ public class LoginActivity extends Activity {
 			mAuthTask = null;
 			showProgress(false);
 		}
+		
 	}
+	
 }

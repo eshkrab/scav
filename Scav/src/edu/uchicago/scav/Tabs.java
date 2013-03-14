@@ -6,6 +6,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.R.drawable;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -238,9 +242,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				
 			case 1:
 				text = getTeam();
-				TextView teamView = new TextView(getActivity());
-				teamView.setText(text);
-				return teamView;
+				try {
+					ListView teamMemberList = getTeamMemberList();
+					return teamMemberList;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					Log.e("error while drawing team member list", e.toString());
+				}
 			case 2:
 				text = getMe();
 				TextView textView = new TextView(getActivity());
@@ -318,7 +326,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					
 					try {
 						Item curItem = items.get(i);
-						String name = curItem.aItemName;
+						String name = curItem.aDescription;
 						int number = curItem.aNumber;
 						String status = curItem.aStatus;
 						if (status.equals("available")){
@@ -351,26 +359,29 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 						
 							for (int j=0; j<numAv; j++){
 								Item curItem = availableItems.get(j);
-								String name = curItem.aItemName;
+								String name = curItem.aDescription;
 								int number = curItem.aNumber;
-								String itemString = String.valueOf(number) +". "+ name;
+								int pts = curItem.aPoints;
+								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
 								adapter.add(itemString);
 								}
 							adapter.add(getActivity().getString(R.string.in_progress_header));
 							for (int k=0; k<numIP; k++){
 								Item curItem1 = inProgressItems.get(k);
-								String name = curItem1.aItemName;
+								String name = curItem1.aDescription;
 								int number = curItem1.aNumber;
-								String itemString = String.valueOf(number) +". "+ name;
+								int pts = curItem1.aPoints;
+								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
 								adapter.add(itemString);
 							}
 
 							adapter.add(getActivity().getString(R.string.done_header));
 							for (int j=0; j<numDone; j++){
 								Item curItem2 = doneItems.get(j);
-								String name = curItem2.aItemName;
+								String name = curItem2.aDescription;
 								int number = curItem2.aNumber;
-								String itemString = String.valueOf(number) +". "+ name;
+								int pts = curItem2.aPoints;
+								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
 								adapter.add(itemString);
 							}
 					}
@@ -399,6 +410,42 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			});
 			return itemsView;
 		}
+		
+		public ListView getTeamMemberList() throws Exception
+		{
+			String myTeam = getTeam();
+			Log.d("my team", myTeam);
+			final List<String> teamMembers = new getTeamMembers().execute(getTeam()).get();
+			int numMembers = teamMembers.size();
+			Log.d("number of items", String.valueOf(numMembers));
+			ListView teamMemberList = new ListView(getActivity());
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
+			{
+				// the following is to make the text in the list black
+				// because by default it comes out as white
+				@Override
+		 		public View getView(int position, View convertView,
+	                ViewGroup parent)
+		 		{
+		 			View view = super.getView(position, convertView, parent);
+		 			TextView textView = (TextView) view.findViewById(android.R.id.text1);
+		 			
+		 			textView.setTextColor(Color.BLACK);
+		 		
+		 			return view;
+		 		}
+			};
+			
+			for (int i = 0; i < teamMembers.size(); i++)
+			{
+				Log.d("adding member", teamMembers.get(i));
+				adapter.add(teamMembers.get(i));
+			}
+			
+			teamMemberList.setAdapter(adapter);
+			return teamMemberList;
+			
+		}
 	}
 	
 	// TESTING
@@ -414,17 +461,44 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	private static class getItems extends AsyncTask<Void, Void, List<Item>>{
+	private static class getItems extends AsyncTask<Void, Void, List<Item>>
+	{
 		@Override
 		protected List<Item> doInBackground(Void...params)
 		{
 			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
 			return myRest.getItems();
 		}
-		
-		
 	}
-	
+		
+	private static class getTeamMembers extends AsyncTask<String, Void, List<String>>
+	{
+		@Override
+		protected List<String> doInBackground(String...params)
+		{
+			String theTeam = params[0];
+			Log.d("the team that I'm looking up", theTeam);
+			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+			List<String> myTeamMemberNames = new ArrayList<String>();
+			Log.d("result of getting team", String.valueOf(myRest.getTeam(theTeam)));
+			JSONObject myTeam = myRest.getTeam(theTeam);
+			try {
+				JSONArray myTeamMembers = myTeam.getJSONArray("members");
+				for (int i = 0; i < myTeamMembers.length(); i++)
+				{
+					String myTeamMember = (String) myTeamMembers.get(i);
+					myTeamMemberNames.add(myTeamMember);
+				}
+				return myTeamMemberNames;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.e("error parsing team member JSON", e.toString());
+				return null;
+			}
+			
+		}
+	}
+		
 	
 	public static String getTeam()
 	{

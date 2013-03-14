@@ -57,9 +57,10 @@ def create_user():
 	if(team not in database["teams"]):
 		return no_team_error
 	email = cnetid + '@uchicago.edu'
-	database["users"][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team}
+	database['users'][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team}
 	database['teams'][team]['members'].append(cnetid)
 	print('creating user: {0}'.format(cnetid))
+	print(database['users'])
 	save_database()
 	return success_message
 
@@ -112,10 +113,14 @@ def get_user():
 	try:
 		user = database['users'][cnetid]
 	except KeyError:
+		print('no such user')
+		print(cur_request)
 		return no_user_error
 	if hashify(password) == user['pass_hash']:
 		return json.dumps(user)
 	else:
+		print('wrong password')
+		print(cur_request)
 		return login_incorrect_error
 
 @app.route('/getTeam', methods=['POST'])
@@ -156,7 +161,7 @@ def change_item_status():
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_acccess_key_error
-	number = cur_requst['number']
+	number = cur_request['number']
 	try:
 		item = database['items'][number]
 	except KeyError:
