@@ -13,7 +13,7 @@ public class JavaActivity {
 
         for(int i = 1; i < 11; i++)
         {
-            myRest.createItem(i, "Item" + i, "Description" + i);
+         //   myRest.createItem(i, "Item" + i, "Description" + i);
             myRest.createTeam("Team" + i);
             myRest.createUser("user" + i + "@uchicago.edu", "Password" + i,  "Team" + i);
         }

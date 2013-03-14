@@ -68,12 +68,15 @@ public class ScavRest
         return new JSONObject();
     }
 
-    public JSONObject createItem(int number, String aName, String aDescription) {
+    public JSONObject createItem(int number, String aName, String aDescription,String aStatus, int aPoints, String aDueDate) {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("number", number)
                                                   .put("name", aName)
-                                                  .put("description", aDescription);
+                                                  .put("description", aDescription)
+                                                  .put("status", aStatus)
+                                                  .put("points", aPoints)
+                                                  .put("due_date", aDueDate);
             return MakePostRequest(aHostName, theCreateItemAddress, myObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -102,7 +105,7 @@ public class ScavRest
     	try {
     		JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
-                    .put("password", aPassword);
+                                                  .put("password", aPassword);
     		result =  MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
     	} catch (JSONException e) {
             return false;
@@ -184,7 +187,8 @@ public class ScavRest
             for (int i = 1; i < allItems.length(); i++)
             {
                 JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(i));
-                myItems.add(new Item(i, (String) itemContent.get("name"), itemContent.getString("description")));
+                myItems.add(new Item(i, (String) itemContent.get("name"), itemContent.getString("description"),
+                		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date")));
             }
         } catch (JSONException e) {
             e.printStackTrace();

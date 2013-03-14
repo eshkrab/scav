@@ -1,8 +1,10 @@
 package edu.uchicago.scav;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -10,6 +12,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +36,7 @@ import android.widget.Toast;
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
+	static List<Item> myItems;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -246,11 +251,22 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 		}
 			};
 			
-		//	for (int i=0; i < Tabs.getItems().size(); i++)
+			Void[] nothing = null;
+			new getItems().execute(nothing);
+			int numItems = Tabs.myItems.size();
+			Log.d("number of items", String.valueOf(numItems));
+			for (int i=0; i < numItems; i++)
 			{
-		//		Item curItem = Tabs.getItems().get(i);
-		//		String itemString = String.valueOf(curItem.number) + ". " + curItem.name + " " + String.valueOf(curItem.points);
-		//		adapter.add(itemString);
+				try {
+					Item curItem = Tabs.myItems.get(i);
+					String name = curItem.aItemName;
+					int number = curItem.aNumber;
+					String itemString = String.valueOf(number) +". "+ name;
+					adapter.add(itemString);
+				}
+				catch(Exception e){
+					Log.e("error", e.toString());
+				}
 			}
 			
 			
@@ -282,7 +298,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	public static List<Item> getItems()
+	/*public static List<Item> getItems()
 	{
 		// placeholder data, replace with real stuff when possible
 		List<Item> items = new ArrayList<Item>();
@@ -291,7 +307,21 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		items.add(new Item(3, "Mr. President", "Win presidential elections in any country"));
 		return items;
 	}
-	
+	*/
+	private static class getItems extends AsyncTask<Void, Void, Void>{
+		@Override
+		protected Void doInBackground(Void...params)
+		{
+			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+			myItems = myRest.getItems();
+			return null;
+		}
+		protected void onPostExecute(Void nothing) {
+			Toast.makeText(Scav.getApp(), "Success", Toast.LENGTH_LONG).show();
+		}
+		
+		
+	}
 	public static String getTeam()
 	{
 		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
