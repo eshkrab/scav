@@ -12,5 +12,9 @@
     <string name="title_activity_tabs">Tabs</string>
     <string name="title_activity_pick_team">PickTeam</string>
     <string name="sort_by_status">Sort items by availability</string>
+    <string name="available_header">Available</string>
+    <string name="in_progress_header">In progress</string>
+    <string name="done_header">Done</string>
+    <item name="item_list" format="integer" type="id">1234563</item>
 
 </resources>

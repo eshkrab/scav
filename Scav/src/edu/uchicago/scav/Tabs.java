@@ -3,10 +3,14 @@ package edu.uchicago.scav;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
+import android.R.drawable;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -19,6 +23,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +39,7 @@ import android.widget.TextView;
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
-	static Boolean sortItemsByStatus = false;
+	static Boolean sortItemsByStatus = true;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -249,8 +254,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			
 		}
 		
+		
 		public ListView getItemList() throws Exception
 		{
+			final Set<String> headers = new TreeSet<String>();
+			headers.add(Scav.getApp().getString(R.string.available_header));
+			headers.add(Scav.getApp().getString(R.string.in_progress_header));
+			headers.add(Scav.getApp().getString(R.string.done_header));
+			
 			// this is needed because Java is silly
 			Void[] nothing = null;
 			final List<Item> items = new getItems().execute(nothing).get();
@@ -263,18 +274,41 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			int numDone = doneItems.size();
 			Log.d("number of items", String.valueOf(numItems));
 			ListView itemsView = new ListView(getActivity());
+			itemsView.setId(R.id.item_list);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
 			{
 				// the following is to make the text in the list black
 				// because by default it comes out as white
-		 		@Override
+		 		@SuppressLint("NewApi")
+				@Override
 		 		public View getView(int position, View convertView,
 	                ViewGroup parent)
 		 		{
 		 			View view = super.getView(position, convertView, parent);
 		 			TextView textView = (TextView) view.findViewById(android.R.id.text1);
-
+		 			
+		 			String itemText = getItem(position);
+		 			
+		 			if (itemText == Scav.getApp().getString(R.string.available_header) ||
+		 					itemText == Scav.getApp().getString(R.string.in_progress_header) ||
+		 					itemText == Scav.getApp().getString(R.string.done_header))
+		 			{
+		 				textView.setClickable(false);
+		 				textView.setGravity(Gravity.CENTER);
+		 				textView.setPadding(5, 5, 5, 5);
+		 				if (itemText == Scav.getApp().getString(R.string.available_header))
+		 				{
+		 					textView.setBackgroundColor(Color.rgb(195, 33, 72));
+		 				} else if (itemText == Scav.getApp().getString(R.string.in_progress_header))
+		 				{
+		 					textView.setBackgroundColor(Color.LTGRAY);
+		 				} else {
+		 					textView.setBackgroundColor(Color.DKGRAY);
+		 				}
+		 			}
+		 			
 		 			textView.setTextColor(Color.BLACK);
+		 		
 		 			return view;
 		 		}
 			};
@@ -312,7 +346,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				}
 				try{
 					if (sortItemsByStatus){
-						adapter.add("AVAILABLE:");
+						
+							adapter.add(getActivity().getString(R.string.available_header));
+						
 							for (int j=0; j<numAv; j++){
 								Item curItem = availableItems.get(j);
 								String name = curItem.aItemName;
@@ -320,7 +356,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 								String itemString = String.valueOf(number) +". "+ name;
 								adapter.add(itemString);
 								}
-						adapter.add("IN PROGRESS:");
+							adapter.add(getActivity().getString(R.string.in_progress_header));
 							for (int k=0; k<numIP; k++){
 								Item curItem1 = inProgressItems.get(k);
 								String name = curItem1.aItemName;
@@ -328,7 +364,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 								String itemString = String.valueOf(number) +". "+ name;
 								adapter.add(itemString);
 							}
-						adapter.add("DONE:");
+
+							adapter.add(getActivity().getString(R.string.done_header));
 							for (int j=0; j<numDone; j++){
 								Item curItem2 = doneItems.get(j);
 								String name = curItem2.aItemName;
