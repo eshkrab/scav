@@ -296,10 +296,17 @@ public class LoginActivity extends Activity {
 				startActivity(tabs);
 				finish();
 			} else {
-				Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
-				pickTeam.putExtra("cnet", mCnet);
-				pickTeam.putExtra("password", mPassword);
-				startActivity(pickTeam);
+				try{
+					Log.d("message", "so I get here and then...");
+					Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
+					pickTeam.putExtra("cnet", mCnet);
+					pickTeam.putExtra("password", mPassword);
+					startActivity(pickTeam);
+				} catch (Exception e)
+				{
+					Log.e("error in login", e.toString());
+				}
+				
 			}
 		}
 

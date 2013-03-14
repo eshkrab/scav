@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 import android.annotation.SuppressLint;
@@ -14,6 +16,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -36,7 +39,6 @@ import android.widget.Toast;
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
-	static List<Item> myItems;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -56,6 +58,9 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// hack
+		// fetch items from server 
+		
 		setContentView(R.layout.activity_tabs);
 
 		// Set up the action bar.
@@ -64,6 +69,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		// Show the Up button in the action bar.
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setTitle(R.string.app_name);
+		
+		
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
@@ -212,8 +219,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			switch(sectionNumber)
 			{
 			case 0:
-				ListView itemView = getItemList();
-				return itemView;
+				try{
+					ListView itemView = getItemList();
+					return itemView;
+				} catch (Exception e) {
+					Log.e("itemView error", e.toString());
+					return view;
+				}
+				
 			case 1:
 				text = getTeam();
 				TextView teamView = new TextView(getActivity());
@@ -232,8 +245,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			
 		}
 		
-		public ListView getItemList()
+		public ListView getItemList() throws Exception
 		{
+			// this is needed because Java is silly
+			Void[] nothing = null;
+			List<Item> items = new getItems().execute(nothing).get();
+			int numItems = items.size();
+			Log.d("number of items", String.valueOf(numItems));
 			ListView itemsView = new ListView(getActivity());
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
 			{
@@ -251,24 +269,19 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 		}
 			};
 			
-			Void[] nothing = null;
-			new getItems().execute(nothing);
-			int numItems = Tabs.myItems.size();
-			Log.d("number of items", String.valueOf(numItems));
-			for (int i=0; i < numItems; i++)
-			{
-				try {
-					Item curItem = Tabs.myItems.get(i);
-					String name = curItem.aItemName;
-					int number = curItem.aNumber;
-					String itemString = String.valueOf(number) +". "+ name;
-					adapter.add(itemString);
+				for (int i= 0; i < numItems; i++)
+				{
+					try {
+						Item curItem = items.get(i);
+						String name = curItem.aItemName;
+						int number = curItem.aNumber;
+						String itemString = String.valueOf(number) +". "+ name;
+						adapter.add(itemString);
+					}
+					catch(Exception e){
+						Log.d("error", e.toString());
+					}
 				}
-				catch(Exception e){
-					Log.e("error", e.toString());
-				}
-			}
-			
 			
 			itemsView.setAdapter(adapter);
 			
@@ -280,7 +293,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		//			Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
 				}
 			});
-			
 			return itemsView;
 		}
 	}
@@ -308,16 +320,12 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		return items;
 	}
 	*/
-	private static class getItems extends AsyncTask<Void, Void, Void>{
+	private static class getItems extends AsyncTask<Void, Void, List<Item>>{
 		@Override
-		protected Void doInBackground(Void...params)
+		protected List<Item> doInBackground(Void...params)
 		{
 			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
-			myItems = myRest.getItems();
-			return null;
-		}
-		protected void onPostExecute(Void nothing) {
-			Toast.makeText(Scav.getApp(), "Success", Toast.LENGTH_LONG).show();
+			return myRest.getItems();
 		}
 		
 		
@@ -325,7 +333,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	public static String getTeam()
 	{
 		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
-		String team = settings.getString("user_team", "none");
+		String team = settings.getString("team", "none");
 		return team;
 	}
 

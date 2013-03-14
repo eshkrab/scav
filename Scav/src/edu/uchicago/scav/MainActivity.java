@@ -39,9 +39,6 @@ public class MainActivity extends Activity
     	{
     		Intent login = new Intent(MainActivity.this, LoginActivity.class);
     		startActivity(login);
-    		settings.edit().putBoolean("first_launch", false).commit();
-    		//startActivity(tabs);
-    		//finish();
     	}
     	else
     	{

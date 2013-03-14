@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class PickTeam extends Activity
 {
@@ -44,7 +45,7 @@ public class PickTeam extends Activity
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		// fill the view with a list of teams
 		try {
-			createTeamList();
+			createTeamListView();
 		} catch (InterruptedException e) {
 			Log.e("error", e.toString());
 		} catch (ExecutionException e) {
@@ -53,11 +54,12 @@ public class PickTeam extends Activity
 	}
 	
 	// creates a list of teams
-	public void createTeamList() throws InterruptedException, ExecutionException
+	public void createTeamListView() throws InterruptedException, ExecutionException
 	{
 		ListView teamView = (ListView) findViewById(R.id.team_list);
-		new PickTeam.getTeams();
-		final List<String> teams = myTeams;
+		Void[] nothing = null;
+		final List<String> teams = new PickTeam.getTeams().execute(nothing).get();
+		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
 				android.R.id.text1, teams);
 		teamView.setAdapter(adapter);
@@ -67,6 +69,7 @@ public class PickTeam extends Activity
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				myTeam = teams.get(position);
+				next();
 			}
 		});
 	}
@@ -100,10 +103,10 @@ public class PickTeam extends Activity
 		return super.onOptionsItemSelected(item);
 	}
 	
-	private class getTeams extends AsyncTask<Void, Void, Void>
+	private class getTeams extends AsyncTask<Void, Void, List<String>>
 	{
 			@Override
-			protected Void doInBackground(Void...params)
+			protected List<String> doInBackground(Void...params)
 			{
 				ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
 				Log.d("status", "I get here");
@@ -116,8 +119,7 @@ public class PickTeam extends Activity
 					Log.d("team", allTeams.get(i).aTeamName);
 				}
 				
-				myTeams = teamNames;
-				return null;
+				return teamNames;
 			}
 			
 	}
@@ -128,7 +130,7 @@ public class PickTeam extends Activity
 		protected String doInBackground(HashMap<String, String>...hashMaps)
 		{
 			HashMap<String, String> user = hashMaps[0];
-			String cnet = user.get("cnet");
+			String cnet = user.get("cnetid");
 			String password = user.get("password");
 			String team = user.get("team");
 			myRest.createUser(cnet, password, team);
@@ -137,7 +139,7 @@ public class PickTeam extends Activity
 		}
 	}
 	
-	public void next(View v)
+	public void next()
 	{
 		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
 		scavPrefs.edit().putString("team", myTeam).commit();
@@ -155,6 +157,12 @@ public class PickTeam extends Activity
 		Intent tabs = new Intent(PickTeam.this, Tabs.class);
 		startActivity(tabs);
 		finish();
+	}
+	
+	public void createNewTeam(View v)
+	{
+		Toast notYet = Toast.makeText(getApplication(), "doesn't work yet", Toast.LENGTH_LONG);
+		notYet.show();
 	}
 
 }

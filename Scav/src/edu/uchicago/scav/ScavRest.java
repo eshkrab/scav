@@ -161,16 +161,20 @@ public class ScavRest
 
         try {
             while(myKeys.hasNext()) {
-                String myTeamName = (String)myKeys.next();
+                String myName = (String) myKeys.next();
+                
+                JSONObject myTeam = myObject.getJSONObject(myName);
+                String myCaptain = myTeam.getString("captain");
+                JSONArray myMembers = myTeam.getJSONArray("members");
 
                 List<String> myUsernames = new ArrayList<String>();
-                JSONArray myUsers = (JSONArray) myObject.get(myTeamName);
-                for (int i = 0; i < myUsers.length(); i++) {
-
-                    myUsernames.add((String) myUsers.get(i));
+                
+                for (int i = 0; i < myMembers.length(); i++)
+                {
+                    myUsernames.add((String) myMembers.get(i));
                 }
 
-                myTeams.add(new Team(myTeamName, myUsernames));
+                myTeams.add(new Team(myName, myCaptain, myUsernames));
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -6,7 +6,7 @@
 
 from __future__ import print_function
 from flask import Flask, request
-import json, hashlib, os
+import json, hashlib, os, pprint
 
 app = Flask(__name__)
 
@@ -49,16 +49,19 @@ def create_user():
 	Needs: access_key, cnetid, password, team
 	"""
 	cur_request = request.form if request.json is None else request.json
+	pp = pprint.PrettyPrinter()
+	pp.pprint(cur_request)
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
-	cnetid = cur_request["cnetid"]
+	cnetid = cur_request['cnetid']
 	pass_hash = hashify(cur_request['password'])
-	team = cur_request["team"]
+	team = cur_request['team']
 	if(team not in database["teams"]):
 		return no_team_error
 	email = cnetid + '@uchicago.edu'
 	database["users"][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team}
-	database["teams"][team]['members'].append(cnetid)
+	pp.pprint(database)
+	database['teams'][team]['members'].append(cnetid)
 	print('creating user: {0}'.format(cnetid))
 	save_database()
 	return success_message
