@@ -9,6 +9,15 @@ public class Item {
     public final String aDueDate;
     
 
+    public Item(){
+    	this.aNumber = 0;
+        this.aItemName = null;
+        this.aDescription = null;
+        this.aStatus = "available";
+        this.aPoints = 0;
+        this.aDueDate = "00-00 00:00";
+    }
+    
     public Item(int aNumber, String aItemName, String aDescription, String aStatus, int aPoints, String aDueDate)
     {
         this.aNumber = aNumber;

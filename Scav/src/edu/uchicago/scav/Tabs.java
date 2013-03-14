@@ -1,12 +1,8 @@
 package edu.uchicago.scav;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -16,7 +12,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -31,14 +26,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
+	static Boolean sortItemsByStatus = false;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -132,6 +128,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			Intent settings = new Intent(Tabs.this, SettingsActivity.class);
 			startActivity(settings);
 			return true;
+		case R.id.sort_by_status:
+			Checkable sortByStatusButton = (Checkable) findViewById(R.id.sort_by_status);
+			if (sortByStatusButton.isChecked())
+			{
+				sortItemsByStatus = true;
+			} else {
+				sortItemsByStatus = false;
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -249,8 +253,14 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		{
 			// this is needed because Java is silly
 			Void[] nothing = null;
-			List<Item> items = new getItems().execute(nothing).get();
+			final List<Item> items = new getItems().execute(nothing).get();
+			List<Item> availableItems = new ArrayList<Item>();
+			List<Item> inProgressItems = new ArrayList<Item>();
+			List<Item> doneItems = new ArrayList<Item>();
 			int numItems = items.size();
+			int numAv = availableItems.size();
+			int numIP = inProgressItems.size();
+			int numDone = doneItems.size();
 			Log.d("number of items", String.valueOf(numItems));
 			ListView itemsView = new ListView(getActivity());
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
@@ -271,16 +281,65 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			
 				for (int i= 0; i < numItems; i++)
 				{
+					
 					try {
 						Item curItem = items.get(i);
 						String name = curItem.aItemName;
 						int number = curItem.aNumber;
-						String itemString = String.valueOf(number) +". "+ name;
-						adapter.add(itemString);
+						String status = curItem.aStatus;
+						if (status.equals("available")){
+							availableItems.add(curItem);
+							numAv++;
+							
+						}
+						else if (status.equals("in progress")){
+							inProgressItems.add(curItem);
+							numIP++;
+						}
+						else if (status.equals("done")){
+							doneItems.add(curItem);
+							numDone++;
+						}
+						if (!sortItemsByStatus){
+							String itemString = String.valueOf(number) +". "+ name;
+							adapter.add(itemString);
+						}
 					}
+						
 					catch(Exception e){
 						Log.d("error", e.toString());
 					}
+				}
+				try{
+					if (sortItemsByStatus){
+						adapter.add("AVAILABLE:");
+							for (int j=0; j<numAv; j++){
+								Item curItem = availableItems.get(j);
+								String name = curItem.aItemName;
+								int number = curItem.aNumber;
+								String itemString = String.valueOf(number) +". "+ name;
+								adapter.add(itemString);
+								}
+						adapter.add("IN PROGRESS:");
+							for (int k=0; k<numIP; k++){
+								Item curItem1 = inProgressItems.get(k);
+								String name = curItem1.aItemName;
+								int number = curItem1.aNumber;
+								String itemString = String.valueOf(number) +". "+ name;
+								adapter.add(itemString);
+							}
+						adapter.add("DONE:");
+							for (int j=0; j<numDone; j++){
+								Item curItem2 = doneItems.get(j);
+								String name = curItem2.aItemName;
+								int number = curItem2.aNumber;
+								String itemString = String.valueOf(number) +". "+ name;
+								adapter.add(itemString);
+							}
+					}
+				}
+				catch(Exception e){
+					Log.d("error", e.toString());
 				}
 			
 			itemsView.setAdapter(adapter);
@@ -290,7 +349,15 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
-		//			Toast.makeText(Scav.getApp(), Tabs.getItems().get(position).description, Toast.LENGTH_LONG).show();
+					try{
+						Log.d("message", "so I get here and then...");
+						Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
+						itemActivity.putExtra("itemNumber", items.get(position).aNumber);
+						//startActivity(itemActivity);
+					} catch (Exception e)
+					{
+						Log.e("error in login", e.toString());
+					}
 				}
 			});
 			return itemsView;
@@ -320,6 +387,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		
 		
 	}
+	
 	
 	public static String getTeam()
 	{

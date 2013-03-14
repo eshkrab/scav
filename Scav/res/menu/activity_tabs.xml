@@ -6,5 +6,6 @@
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
     <item android:id="@+id/first_launch" android:title="@string/first_launch" android:showAsAction="never"></item>
+    <item android:id="@+id/sort_by_status" android:checkable="true" android:checked="false" android:showAsAction="never" android:title="@string/sort_by_status"></item>
 
 </menu>

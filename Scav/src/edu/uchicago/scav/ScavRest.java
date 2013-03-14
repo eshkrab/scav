@@ -200,6 +200,20 @@ public class ScavRest
 
         return myItems;
     }
+    public Item getItem(int number) {
+        JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
+        Item nullItem=new Item();
+        
+        try {
+               JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(number));
+               Item item = new Item(number, (String) itemContent.get("name"), itemContent.getString("description"),
+                		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date"));
+               return item;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return nullItem;
+        }
+    }
 
     private JSONObject MakePostRequest(String aURL, String aPostFix, String aJSONObject) {
         try {
