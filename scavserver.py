@@ -20,6 +20,13 @@ illegal_access_key_error = json.dumps({'status': 'error', 'message': 'illegal ac
 no_team_error = json.dumps({'status': 'error', 'message': 'no such team'})
 login_incorrect_error = json.dumps({'status': 'error', 'message': 'login data incorrect'})
 
+no_item_error = json.dumps({'status': 'error', 'message': 'no such item'})
+item_status_error = json.dumps({'status': 'error', 'message': 'status must be available, in progress or done'})
+
+no_user_error = json.dumps({'status': 'error', 'message': 'no such user'})
+
+allowed_item_statuses = {'available', 'in progress', 'done'}
+
 def save_database():
 	json.dump(database, open(dbfile, "w"))
 
@@ -49,8 +56,9 @@ def create_user():
 	team = cur_request["team"]
 	if(team not in database["teams"]):
 		return no_team_error
-	database["users"][cnetid] = {"cnetid" :cnetid, "pass_hash": pass_hash, "team" : team}
-	database["teams"][team].append(cnetid)
+	email = cnetid + '@uchicago.edu'
+	database["users"][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team}
+	database["teams"][team]['members'].append(cnetid)
 	print('creating user: {0}'.format(cnetid))
 	save_database()
 	return success_message
@@ -58,13 +66,14 @@ def create_user():
 @app.route("/createTeam", methods = ['POST'])
 def create_team():
 	"""
-	Needs: access_key, team (name)
+	Needs: access_key, team (name), captain (cnet)
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
 	team = cur_request['team']
-	database["teams"][team] = []
+	captain = cur_request['captain']
+	database["teams"][team] = {'captain': captain, 'members': []}
 	print('creating team: {0}'.format(team))
 	save_database()
 	return success_message
@@ -72,16 +81,20 @@ def create_team():
 @app.route("/createItem", methods = ['POST'])
 def create_item():
 	"""
-	Needs: access_key, item_name, number, description, points
+	Needs: access_key, item_name, number, description, points, status, due_date
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
 	number = cur_request['number']
-	item_name = cur_request["name"]
-	description = cur_request["description"]
-	points = cur_request["points"]
-	database["items"][number] = {'name': item_name, 'description': description, 'points' : points}
+	item_name = cur_request['name']
+	description = cur_request['description']
+	points = cur_request['points']
+	status = cur_request['status']
+	if status not in allowed_item_statuses:
+		return item_status_error
+	due_date = cur_request['due_date']
+	database['items'][number] = {'name': item_name, 'description': description, 'points' : points, 'status': status,'due_date': due_date}
 	print('creating item: {0}'.format(item_name))
 	save_database()
 	return success_message
@@ -96,7 +109,10 @@ def get_user():
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
 	password = cur_request['password']
-	user = database['users'][cnetid]
+	try:
+		user = database['users'][cnetid]
+	except KeyError:
+		return no_user_error
 	if hashify(password) == user['pass_hash']:
 		return json.dumps(user)
 	else:
@@ -116,9 +132,9 @@ def get_team():
 	except KeyError:
 		return no_team_error
 	return json.dumps(team)
-	
+
 @app.route('/getItem', methods=['POST'])
-def get_team():
+def get_item():
 	"""
 	Needs: access_key, number
 	"""
@@ -127,10 +143,32 @@ def get_team():
 		return illegal_acccess_key_error
 	number = cur_request['number']
 	try:
-		team = database['items'][number]
+		item = database['items'][number]
 	except KeyError:
-		return no_team_error
+		return no_item_error
 	return json.dumps(item)
+
+@app.route('/changeItemStatus', methods=['POST'])
+def change_item_status():
+	"""
+	Needs: access_key, number, new_status
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != access_key:
+		return illegal_acccess_key_error
+	number = cur_requst['number']
+	try:
+		item = database['items'][number]
+	except KeyError:
+		return no_item_error
+	new_status = cur_request['new_status']
+	if new_status in allowed_item_statuses:
+		item['status'] = new_status
+	else:
+		return item_status_error
+	database['items'][number] = item
+	save_database()
+	return success_message
 
 @app.route("/getAllUsers")
 def list_users():
