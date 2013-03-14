@@ -88,15 +88,14 @@ def create_item():
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
 	number = cur_request['number']
-	item_name = cur_request['name']
 	description = cur_request['description']
 	points = cur_request['points']
 	status = cur_request['status']
 	if status not in allowed_item_statuses:
 		return item_status_error
 	due_date = cur_request['due_date']
-	database['items'][number] = {'name': item_name, 'description': description, 'points' : points, 'status': status,'due_date': due_date}
-	print('creating item: {0}'.format(item_name))
+	database['items'][number] = {'description': description, 'points' : points, 'status': status,'due_date': due_date}
+	print('creating item: {0}'.format(number))
 	save_database()
 	return success_message
 

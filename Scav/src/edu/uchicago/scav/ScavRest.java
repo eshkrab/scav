@@ -127,7 +127,7 @@ public class ScavRest
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("team", aTeam);
-            return MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
+            return MakePostRequest(aHostName, theGetTeamAddress, myObject.toString());
         } catch (JSONException e) {
             Log.e("JSON error", e.toString());
         }
@@ -189,10 +189,10 @@ public class ScavRest
         List<Item> myItems = new ArrayList<Item>();
 
         try {
-            for (int i = 1; i < allItems.length(); i++)
+            for (int i = 1; i < (allItems.length() + 1); i++)
             {
                 JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(i));
-                myItems.add(new Item(i, (String) itemContent.get("name"), itemContent.getString("description"),
+                myItems.add(new Item(i, itemContent.getString("description"),
                 		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date")));
             }
         } catch (JSONException e) {
@@ -203,11 +203,11 @@ public class ScavRest
     }
     public Item getItem(int number) {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
-        Item nullItem=new Item();
+        Item nullItem = new Item(0, "null", aAccessKey, 1000, "in progress");
         
         try {
                JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(number));
-               Item item = new Item(number, (String) itemContent.get("name"), itemContent.getString("description"),
+               Item item = new Item(number, itemContent.getString("description"),
                 		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date"));
                return item;
         } catch (JSONException e) {

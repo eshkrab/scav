@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
 	final String PREFS_NAME = "ScavPrefsFile";
 	static Boolean sortItemsByStatus = true;
+	final static String myTeam = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0).getString("team", "");
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -202,7 +204,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			case 0:
 				return getString(R.string.items_tab).toUpperCase(Locale.getDefault());
 			case 1:
-				return getString(R.string.team_tab).toUpperCase(Locale.getDefault());
+				return (getString(R.string.team_tab) + " " + myTeam).toUpperCase(Locale.getDefault());
 			case 2:
 				return getString(R.string.me_tab).toUpperCase(Locale.getDefault());
 			}
@@ -241,13 +243,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				}
 				
 			case 1:
-				text = getTeam();
 				try {
 					ListView teamMemberList = getTeamMemberList();
 					return teamMemberList;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.e("error while drawing team member list", e.toString());
+					return view;
 				}
 			case 2:
 				text = getMe();
@@ -280,7 +282,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			int numAv = availableItems.size();
 			int numIP = inProgressItems.size();
 			int numDone = doneItems.size();
-			Log.d("number of items", String.valueOf(numItems));
 			ListView itemsView = new ListView(getActivity());
 			itemsView.setId(R.id.item_list);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
@@ -362,7 +363,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 								String name = curItem.aDescription;
 								int number = curItem.aNumber;
 								int pts = curItem.aPoints;
-								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
+								String itemString = String.valueOf(number) +". "+ name+"    " + pts +  " points.";
 								adapter.add(itemString);
 								}
 							adapter.add(getActivity().getString(R.string.in_progress_header));
@@ -398,7 +399,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
 					try{
-						Log.d("message", "so I get here and then...");
 						Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
 						itemActivity.putExtra("itemNumber", items.get(position).aNumber);
 						//startActivity(itemActivity);
@@ -413,11 +413,11 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		
 		public ListView getTeamMemberList() throws Exception
 		{
-			String myTeam = getTeam();
-			Log.d("my team", myTeam);
-			final List<String> teamMembers = new getTeamMembers().execute(getTeam()).get();
-			int numMembers = teamMembers.size();
-			Log.d("number of items", String.valueOf(numMembers));
+
+			final JSONObject team = new getTeam().execute(myTeam).get();
+			final String myCaptain = team.getString("captain");
+			JSONArray teamMembers = team.getJSONArray("members");
+			
 			ListView teamMemberList = new ListView(getActivity());
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(Scav.getApp(), android.R.layout.simple_list_item_1)
 			{
@@ -431,15 +431,26 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		 			TextView textView = (TextView) view.findViewById(android.R.id.text1);
 		 			
 		 			textView.setTextColor(Color.BLACK);
+		 			
+		 			String myText = (String) textView.getText();
+		 			if (myText.contains(myCaptain))
+		 			{
+		 				textView.setTypeface(Typeface.DEFAULT_BOLD);
+		 				textView.setClickable(false);
+		 			}
+		 			else
+		 			{
+		 				textView.setClickable(true);
+		 			}
 		 		
 		 			return view;
 		 		}
 			};
 			
-			for (int i = 0; i < teamMembers.size(); i++)
+			adapter.add("Captain\n" + myCaptain);
+			for (int i = 0; i < teamMembers.length(); i++)
 			{
-				Log.d("adding member", teamMembers.get(i));
-				adapter.add(teamMembers.get(i));
+				adapter.add(teamMembers.getString(i));
 			}
 			
 			teamMemberList.setAdapter(adapter);
@@ -457,7 +468,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    settings.edit().putBoolean("first_launch", true).commit();
 	    Intent login = new Intent(Tabs.this, LoginActivity.class);
 	    startActivity(login);
-	    // android.os.Process.killProcess(android.os.Process.myPid());
 	    finish();
 	}
 	
@@ -471,41 +481,19 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		}
 	}
 		
-	private static class getTeamMembers extends AsyncTask<String, Void, List<String>>
+	private static class getTeam extends AsyncTask<String, Void, JSONObject>
 	{
 		@Override
-		protected List<String> doInBackground(String...params)
+		protected JSONObject doInBackground(String...params)
 		{
 			String theTeam = params[0];
-			Log.d("the team that I'm looking up", theTeam);
 			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
-			List<String> myTeamMemberNames = new ArrayList<String>();
 			Log.d("result of getting team", String.valueOf(myRest.getTeam(theTeam)));
 			JSONObject myTeam = myRest.getTeam(theTeam);
-			try {
-				JSONArray myTeamMembers = myTeam.getJSONArray("members");
-				for (int i = 0; i < myTeamMembers.length(); i++)
-				{
-					String myTeamMember = (String) myTeamMembers.get(i);
-					myTeamMemberNames.add(myTeamMember);
-				}
-				return myTeamMemberNames;
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				Log.e("error parsing team member JSON", e.toString());
-				return null;
-			}
-			
+			return myTeam;
 		}
 	}
 		
-	
-	public static String getTeam()
-	{
-		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
-		String team = settings.getString("team", "none");
-		return team;
-	}
 	
 	public static String getMe()
 	{

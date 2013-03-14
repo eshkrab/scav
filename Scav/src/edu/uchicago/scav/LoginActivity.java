@@ -334,6 +334,10 @@ public class LoginActivity extends Activity {
 
 			if (success) {
 				Intent tabs = new Intent(LoginActivity.this, Tabs.class);
+				SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+				scavPrefs.edit().putBoolean("first_launch", false).commit();
+				// TODO
+				// get the user information to store in the local 
 				startActivity(tabs);
 				finish();
 			}
