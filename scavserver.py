@@ -49,7 +49,6 @@ def create_user():
 	Needs: access_key, cnetid, password, team
 	"""
 	cur_request = request.form if request.json is None else request.json
-	pp = pprint.PrettyPrinter()
 	pp.pprint(cur_request)
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
@@ -60,7 +59,6 @@ def create_user():
 		return no_team_error
 	email = cnetid + '@uchicago.edu'
 	database["users"][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team}
-	pp.pprint(database)
 	database['teams'][team]['members'].append(cnetid)
 	print('creating user: {0}'.format(cnetid))
 	save_database()

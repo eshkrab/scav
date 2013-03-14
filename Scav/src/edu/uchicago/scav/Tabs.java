@@ -233,7 +233,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				teamView.setText(text);
 				return teamView;
 			case 2:
-				text = getString(R.string.me_tab);
+				text = getMe();
 				TextView textView = new TextView(getActivity());
 				textView.setText(text);
 				return textView;
@@ -310,16 +310,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	    finish();
 	}
 	
-	/*public static List<Item> getItems()
-	{
-		// placeholder data, replace with real stuff when possible
-		List<Item> items = new ArrayList<Item>();
-		items.add(new Item(1, "Nuclear reactor", "Build a nuclear reactor"));
-		items.add(new Item(2, "Colourful piano", "Make a colourful piano"));
-		items.add(new Item(3, "Mr. President", "Win presidential elections in any country"));
-		return items;
-	}
-	*/
 	private static class getItems extends AsyncTask<Void, Void, List<Item>>{
 		@Override
 		protected List<Item> doInBackground(Void...params)
@@ -330,11 +320,19 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		
 		
 	}
+	
 	public static String getTeam()
 	{
 		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
 		String team = settings.getString("team", "none");
 		return team;
+	}
+	
+	public static String getMe()
+	{
+		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
+		String myCNet = settings.getString("cnetid", "cnet goes here");
+		return myCNet;
 	}
 
 }

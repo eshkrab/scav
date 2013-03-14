@@ -149,6 +149,10 @@ public class PickTeam extends Activity
         userData.put("cnetid", myCNet);
         userData.put("password", myPassword);
         userData.put("team", myTeam);
+        
+        Log.d("cnet", myCNet);
+        
+        scavPrefs.edit().putString("cnetid", myCNet).commit();
 		
         new createUser().execute(userData);
         
