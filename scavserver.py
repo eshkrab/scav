@@ -49,7 +49,6 @@ def create_user():
 	Needs: access_key, cnetid, password, team
 	"""
 	cur_request = request.form if request.json is None else request.json
-	pp.pprint(cur_request)
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
