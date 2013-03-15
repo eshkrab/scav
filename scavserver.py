@@ -33,8 +33,10 @@ item_owner_error = json.dumps({'status': 'error', 'name': 'item_owner_error', 'm
 
 no_user_error = json.dumps({'status': 'error', 'name': 'no_user_error', 'message': 'no such user'})
 
+# allowed item statuses
 allowed_item_statuses = {'available', 'in progress', 'done'}
 
+# regular expressions for parsing phone numbers
 num_nice_re = re.compile('[\(\)\+\- ]')
 num_len_re = re.compile('\d{10,11}')
 
@@ -55,38 +57,22 @@ def load_database():
 def home():
 	return "Hi. I'm a tiny flask server running to demo the scav app. There isn't anything to see here, really."
 
-@app.route("/createUser", methods = ['POST'])
-def create_user():
+@app.route("/createItem", methods = ['POST'])
+def create_item():
 	"""
-	Needs: access_key, cnetid, password, team, about, phone_number
+	Needs: access_key, number, description, points, due_date
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
-	cnetid = cur_request['cnetid']
-	if cnetid in list(database['users'].keys()):
-		return duplicate_user_error
-	pass_hash = hashify(cur_request['password'])
-	team = cur_request['team']
-	if(team not in database["teams"]):
-		return no_team_error
-	about = cur_request['about']
-	try:
-		phone_number = str(cur_request['phone_number'])
-	except KeyError as e:
-		pp = pprint.PrettyPrinter()
-		pp.pprint(cur_request)
-		return json.dumps({'error': 'I fail'})
-	# if it comes in as a nicely formatted number, we'll get rid of that nice formatting
-	if num_nice_re.search(phone_number):
-		phone_number = phone_number.translate(None, '+()- ')
-	# let's check if it's valid, or if there is something there at all
-	phone_number = phone_number if num_len_re.match(phone_number) else ''
-	email = cnetid + '@uchicago.edu'
-	database['users'][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team, 'phone_number': phone_number, 'about': about}
-	database['teams'][team]['members'].append(cnetid)
-	print('creating user: {0}'.format(cnetid))
-	print(database['users'])
+	number = cur_request['number']
+	if number in database['items']:
+		return duplicate_item_error
+	description = cur_request['description']
+	points = cur_request['points']
+	due_date = cur_request['due_date']
+	database['items'][number] = {'description': description, 'points' : points, 'status': {}, 'due_date': due_date, 'owner': {}}
+	print('creating item: {0}'.format(number))
 	save_database()
 	return success_message
 
@@ -100,29 +86,47 @@ def create_team():
 		return illegal_access_key_error
 	team = cur_request['team']
 	captain = cur_request['captain']
-	if team in list(database['teams'].keys()):
+	if team in database['teams']:
 		return duplicate_team_error
 	database["teams"][team] = {'captain': captain, 'members': []}
+	# iterate over items to add team statuses for the team
+	for item in database['items']:
+		database['items'][item]['status'][team] = 'available'
 	print('creating team: {0}'.format(team))
 	save_database()
 	return success_message
 
-@app.route("/createItem", methods = ['POST'])
-def create_item():
+@app.route("/createUser", methods = ['POST'])
+def create_user():
 	"""
-	Needs: access_key, number, description, points, due_date
+	Needs: access_key, cnetid, password, team, about, phone_number
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
-	number = cur_request['number']
-	if number in list(database['items'].keys()):
-		return duplicate_item_error
-	description = cur_request['description']
-	points = float(cur_request['points'])
-	due_date = cur_request['due_date']
-	database['items'][number] = {'description': description, 'points' : points, 'status': 'available', 'due_date': due_date, 'owner': ''}
-	print('creating item: {0}'.format(number))
+	cnetid = cur_request['cnetid']
+	if cnetid in database['users']:
+		return duplicate_user_error
+	pass_hash = hashify(cur_request['password'])
+	team = cur_request['team']
+	if(team not in database["teams"]):
+		return no_team_error
+	about = cur_request['about']
+	try:
+		phone_number = str(cur_request['phone_number'])
+	except KeyError as e:
+		pp = pprint.PrettyPrinter()
+		pp.pprint(cur_request)
+	# if it comes in as a nicely formatted number, we'll get rid of that nice formatting
+	if num_nice_re.search(phone_number):
+		phone_number = phone_number.translate(None, '+()- ')
+	# let's check if it's valid, or if there is something there at all
+	phone_number = phone_number if num_len_re.match(phone_number) else ''
+	email = cnetid + '@uchicago.edu'
+	database['users'][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team, 'phone_number': phone_number, 'about': about}
+	database['teams'][team]['members'].append(cnetid)
+	print('creating user: {0}'.format(cnetid))
+	print(database['users'])
 	save_database()
 	return success_message
 
@@ -190,17 +194,24 @@ def amend_item():
 		item = database['items'][number]
 	except KeyError:
 		return no_item_error
-	new_status = cur_request['new_status']
-	if item['status'] == 'available' and new_status in allowed_item_statuses:
-		item['status'] = new_status
-	else:
-		return item_status_error
 	new_owner = cur_request['new_owner']
-	# we can only assign an owner if there isn't one already, and if the new one is a valid user
-	if item['owner'] == '' and new_owner in list(database['users'].keys()):
-		item['owner'] = new_owner
+	# find the team of the new owner
+	team_name = [team_name for team_name in database['teams'].keys() if new_owner in database['teams'][team_name]['members'] or new_owner == database['teams'][team_name]['captain']][0]
+	# if the there is no team record for this item ownership, then there definitely is no owner
+	try:
+		present_owner = item['owner'][team_name]
+	except KeyError:
+		present_owner = ''
+	# we can only assign an owner if there isn't one already
+	if present_owner == '':
+		item['owner'][team_name] = new_owner
 	else:
 		return item_owner_error
+	new_status = cur_request['new_status']
+	if item['status'][team_name] == 'available' and new_status in allowed_item_statuses:
+		item['status'][team_name] = new_status
+	else:
+		return item_status_error
 	database['items'][number] = item
 	save_database()
 	return success_message

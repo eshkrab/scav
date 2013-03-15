@@ -287,8 +287,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			headers.add(Scav.getApp().getString(R.string.done_header));
 			
 			// this is needed because Java is silly
-			Void[] nothing = null;
-			final List<Item> items = new getItems().execute(nothing).get();
+			final List<Item> items = new getItems().execute(myTeam).get();
+			Log.d("items", items.toString());
 			List<Item> availableItems = new ArrayList<Item>();
 			List<Item> inProgressItems = new ArrayList<Item>();
 			List<Item> doneItems = new ArrayList<Item>();
@@ -338,7 +338,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			
 				for (int i= 0; i < numItems; i++)
 				{
-					
 					try {
 						Item curItem = items.get(i);
 						String name = curItem.aDescription;
@@ -372,32 +371,25 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 						
 							adapter.add(getActivity().getString(R.string.available_header));
 						
-							for (int j=0; j<numAv; j++){
+							for (int j=0; j<numAv; j++)
+							{
 								Item curItem = availableItems.get(j);
-								String name = curItem.aDescription;
-								int number = curItem.aNumber;
-								int pts = curItem.aPoints;
-								String itemString = String.valueOf(number) +". "+ name+"    " + pts +  " points.";
-								adapter.add(itemString);
-								}
+								adapter.add(generateItemString(curItem));
+							}
+							
 							adapter.add(getActivity().getString(R.string.in_progress_header));
-							for (int k=0; k<numIP; k++){
-								Item curItem1 = inProgressItems.get(k);
-								String name = curItem1.aDescription;
-								int number = curItem1.aNumber;
-								int pts = curItem1.aPoints;
-								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
-								adapter.add(itemString);
+							for (int k=0; k<numIP; k++)
+							{
+								Item curItem = inProgressItems.get(k);
+								adapter.add(generateItemString(curItem));
 							}
 
 							adapter.add(getActivity().getString(R.string.done_header));
-							for (int j=0; j<numDone; j++){
-								Item curItem2 = doneItems.get(j);
-								String name = curItem2.aDescription;
-								int number = curItem2.aNumber;
-								int pts = curItem2.aPoints;
-								String itemString = String.valueOf(number) +". "+ name+"    "+pts+" points.";
-								adapter.add(itemString);
+							
+							for (int j=0; j<numDone; j++)
+							{
+								Item curItem = doneItems.get(j);
+								adapter.add(generateItemString(curItem));
 							}
 					}
 				}
@@ -416,9 +408,10 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 						int number=0;
 						String text = (String) ((TextView) view).getText();
 						String[] tokens = text.split("[.]");
-						number=Integer.parseInt(tokens[0]);
+						number = Integer.parseInt(tokens[0]);
 						Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
 						itemActivity.putExtra("itemNumber", number);
+						itemActivity.putExtra("team", myTeam);
 						startActivity(itemActivity);
 					} catch (Exception e)
 					{
@@ -427,6 +420,15 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				}
 			});
 			return itemsView;
+		}
+		
+		private String generateItemString(Item item)
+		{
+			String description = item.aDescription;
+			int number = item.aNumber;
+			String points = item.aPoints;
+			String itemString = String.valueOf(number) + ". " + description + "\n" + points;
+			return itemString;
 		}
 		
 		public ListView getTeamMemberList() throws Exception
@@ -502,13 +504,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		}
 	}
 	
-	private static class getItems extends AsyncTask<Void, Void, List<Item>>
+	private static class getItems extends AsyncTask<String, Void, List<Item>>
 	{
 		@Override
-		protected List<Item> doInBackground(Void...params)
+		protected List<Item> doInBackground(String...params)
 		{
 			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
-			return myRest.getItems();
+			return myRest.getItems(params[0]);
 		}
 	}
 		

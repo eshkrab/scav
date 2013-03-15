@@ -8,26 +8,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".UserInfo" >
 
-    <EditText
-        android:id="@+id/phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="68dp"
-        android:ems="10"
-        android:inputType="phone" >
-
-        <requestFocus />
-    </EditText>
-
     <TextView
         android:id="@+id/phone_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="34dp"
+        android:layout_marginLeft="73dp"
+        android:layout_marginTop="70dp"
         android:text="@string/enter_phone" />
 
     <TextView
@@ -35,27 +23,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/phone_prompt"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/phone"
+        android:layout_marginTop="69dp"
         android:text="@string/about_user" />
 
     <EditText
         android:id="@+id/about_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/phone"
+        android:layout_alignLeft="@+id/about_text_prompt"
+        android:layout_alignRight="@+id/phone"
         android:layout_below="@+id/about_text_prompt"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="63dp"
         android:ems="10"
         android:inputType="textMultiLine" />
 
-    <Button
-        android:id="@+id/next_button"
+    <EditText
+        android:id="@+id/phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/about_text"
-        android:layout_marginBottom="41dp"
-        android:text="@string/next_button"
-        android:onClick="next" />
+        android:layout_alignLeft="@+id/about_text_prompt"
+        android:layout_alignRight="@+id/phone_prompt"
+        android:layout_below="@+id/phone_prompt"
+        android:layout_marginTop="125dp"
+        android:ems="10"
+        android:inputType="phone" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>

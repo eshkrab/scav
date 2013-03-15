@@ -1,7 +1,5 @@
 package edu.uchicago.scav;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -16,18 +14,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ItemActivity extends Activity
 {
-	private static final ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
 	static int itemNumber;
+	static String teamName;
 	//static Item curItem;
 
 	static List<String> myTeams;
@@ -43,6 +36,7 @@ public class ItemActivity extends Activity
 		    Log.e("extras", "Extra NULL");
 		} else {
 		itemNumber = extras.getInt("itemNumber");
+		teamName = extras.getString("team");
 		}
 		// Show the Up button in the action bar.
 		ActionBar actionBar = getActionBar();
@@ -132,7 +126,7 @@ public class ItemActivity extends Activity
 			{
 				ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
 				Log.d("status", "I get here");
-				Item item = myRest.getItem(Integer.valueOf(itemNumber));
+				Item item = myRest.getItem(Integer.valueOf(itemNumber), teamName);
 			
 				return item;
 			}

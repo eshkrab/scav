@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -35,12 +36,26 @@ public class FinishLogin extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.user_info, menu);
+		getMenuInflater().inflate(R.menu.user_info, menu);
 		return true;
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch(item.getItemId())
+		{
+		case R.id.next_button:
+			next();
+			return true;
+		default:
+			return false;
+		}
+		
+	}
+	
 	@SuppressWarnings("unchecked")
-	public void next(View v)
+	public void next()
 	{
 		EditText phoneNumberView = (EditText) findViewById(R.id.phone);
 		String phoneNumber = phoneNumberView.getText().toString();

@@ -78,21 +78,21 @@ public class ScavRest
     }
 
 
-	public JSONObject createItem(int number, String aDescription, int aPoints, String aDueDate)
-	{
-        try {
-            JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
-                                                  .put("number", number)
-                                                  .put("description", aDescription)
-                                                  .put("points", aPoints)
-                                                  .put("due_date", aDueDate);
-            return MakePostRequest(aHostName, theCreateItemAddress, myObject.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return new JSONObject();
-    }
+//	public JSONObject createItem(int number, String aDescription, int aPoints, String aDueDate)
+//	{
+//        try {
+//            JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
+//                                                  .put("number", number)
+//                                                  .put("description", aDescription)
+//                                                  .put("points", aPoints)
+//                                                  .put("due_date", aDueDate);
+//            return MakePostRequest(aHostName, theCreateItemAddress, myObject.toString());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return new JSONObject();
+//    }
 
     public User getUser(String aCnetID, String aPassword)
     {
@@ -209,7 +209,7 @@ public class ScavRest
         return myTeams;
     }
 
-    public List<Item> getItems()
+    public List<Item> getItems(String team)
     {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
         List<Item> myItems = new ArrayList<Item>();
@@ -218,10 +218,13 @@ public class ScavRest
             {
             	try {
                 JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(i));
-                myItems.add(new Item(i, itemContent.getString("description"),
-                		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date")));
+                String teamStatus = itemContent.getJSONObject("status").getString(team);
+                // we need to replace JSON's unescaped newlines characters ("\\n") for correct newline formatting
+                myItems.add(new Item(i, itemContent.getString("description").replace("\\n", "\n"),
+                		(String) teamStatus, (String) itemContent.getString("points") , (String) itemContent.getString("due_date"), null));
             	} catch (JSONException e)
             	{
+            		Log.e("error processing returned items", e.toString());
             		continue;
             	}
             }
@@ -229,15 +232,24 @@ public class ScavRest
         return myItems;
     }
     
-    public Item getItem(int number)
+    public Item getItem(int number, String team)
     {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
-        Item nullItem = new Item(0, "null", aAccessKey, 1000, "in progress");
+        Item nullItem = new Item(0, "null", aAccessKey, "1000", "in progress", "nobody");
         
         try {
                JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(number));
-               Item item = new Item(number, itemContent.getString("description"),
-                		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date"));
+               String teamItemStatus = itemContent.getJSONObject("status").getString(team);
+               String teamOwner;
+               try {
+            	   teamOwner = itemContent.getJSONObject("owner").getString(team);
+               } catch (JSONException e)
+               {
+            	   teamOwner = "not claimed by anyone";
+               }
+            // we need to replace JSON's unescaped newlines characters ("\\n") for correct newline formatting
+			Item item = new Item(number, itemContent.getString("description").replace("\\n", "\n"),
+                		teamItemStatus, (String)itemContent.getString("points"), (String) itemContent.getString("due_date"), teamOwner);
                return item;
         } catch (JSONException e) {
             e.printStackTrace();
