@@ -39,6 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
@@ -399,12 +400,16 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 				{
 					try{
-						//Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
-						//itemActivity.putExtra("itemNumber", items.get(position).aNumber);
-						//startActivity(itemActivity);
+						int number=0;
+						String text = (String) ((TextView) view).getText();
+						String[] tokens = text.split("[.]");
+						number=Integer.parseInt(tokens[0]);
+						Intent itemActivity = new Intent(Scav.getApp(), ItemActivity.class);
+						itemActivity.putExtra("itemNumber", number);
+						startActivity(itemActivity);
 					} catch (Exception e)
 					{
-						Log.e("error in login", e.toString());
+						Log.e("error in parsing", e.toString());
 					}
 				}
 			});

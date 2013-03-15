@@ -15,7 +15,9 @@
     <string name="available_header">Available</string>
     <string name="in_progress_header">In progress</string>
     <string name="done_header">Done</string>
+
     <item name="item_list" format="integer" type="id">1234563</item>
+
     <string name="ok_dialog">Right</string>
     <string name="pick_team_fail_message">I wasn\'t able to do that. Perhaps you have no Internet connection?</string>
     <string name="pick_team_fail_title">Something went wrong!</string>
@@ -23,5 +25,7 @@
     <string name="no_user_found_text">There was no user found with these credentials. Are you new, or did you make a mistake somewhere?</string>
     <string name="new_user_button">I\'m new</string>
     <string name="made_mistake_login">Must\'ve messed up</string>
+    <string name="title_activity_item">ItemActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
