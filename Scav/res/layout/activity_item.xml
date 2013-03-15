@@ -93,4 +93,24 @@
         android:layout_alignParentRight="true"
         android:text="Claim" />
 
+    <Button
+        android:id="@+id/contribute_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/claim_button"
+        android:layout_alignBottom="@+id/claim_button"
+        android:layout_alignParentRight="true"
+        android:text="Contribute" />
+
+    <Button
+        android:id="@+id/see_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/claim_button"
+        android:layout_alignBottom="@+id/claim_button"
+        android:layout_alignParentRight="true"
+        android:text="See" />
+
 </RelativeLayout>

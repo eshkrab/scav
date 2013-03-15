@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,8 +64,30 @@ public class ItemActivity extends Activity
 		TextView itemPts = (TextView) findViewById(R.id.item_points);
 		TextView itemStatus = (TextView) findViewById(R.id.item_status);
 		TextView itemDesc = (TextView) findViewById(R.id.item_description);
+		
+		Button claimButton = (Button) findViewById(R.id.claim_button);
+		Button contButton = (Button) findViewById(R.id.contribute_button);
+		Button seeButton = (Button) findViewById(R.id.see_button);
+		
 		Void[] nothing = null;
 		final Item item = new ItemActivity.getItem().execute(nothing).get();
+		
+		if (item.aStatus.equals("available")){
+			claimButton.setVisibility(View.VISIBLE);
+			contButton.setVisibility(View.GONE);
+			seeButton.setVisibility(View.GONE);
+		}
+		else if (item.aStatus.equals("in progress")){
+			claimButton.setVisibility(View.GONE);
+			contButton.setVisibility(View.VISIBLE);
+			seeButton.setVisibility(View.GONE);
+		}
+		else{
+			claimButton.setVisibility(View.GONE);
+			contButton.setVisibility(View.GONE);
+			seeButton.setVisibility(View.VISIBLE);
+		}
+			
 		
 		
 		itemNum.setText(String.valueOf(item.aNumber)+":");
@@ -120,9 +143,7 @@ public class ItemActivity extends Activity
 	public void next()
 	{
 		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
-	//	scavPrefs.edit().putString("team", myTeam).commit();
 		
-        
         scavPrefs.edit().putBoolean("first_launch", false).commit();
 		
 		Intent tabs = new Intent(ItemActivity.this, Tabs.class);
@@ -130,10 +151,5 @@ public class ItemActivity extends Activity
 		finish();
 	}
 	
-	public void createNewTeam(View v)
-	{
-		Toast notYet = Toast.makeText(getApplication(), "doesn't work yet", Toast.LENGTH_LONG);
-		notYet.show();
-	}
 
 }
