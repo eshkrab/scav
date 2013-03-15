@@ -1,10 +1,12 @@
 package edu.uchicago.scav;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,9 +46,9 @@ import android.widget.Toast;
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	
-	final String PREFS_NAME = "ScavPrefsFile";
 	static Boolean sortItemsByStatus = true;
-	final static String myTeam = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0).getString("team", "");
+	static String myTeam;
+	static User myUser;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -78,6 +80,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setTitle(R.string.app_name);
 		
+		try {
+			myUser = new getUser().execute((Void) null).get();
+			Log.d("user", myUser.toString());
+		} catch (Exception e) {
+			myUser = new User(null, null, null, null, null);
+		}
+		myTeam = myUser.aTeamName;
 		
 
 		// Create the adapter that will return a fragment for each of the three
@@ -253,9 +262,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 					return view;
 				}
 			case 2:
-				text = getMe();
+				String cnetText = Tabs.myUser.aCnetID;
+				String phoneNumber = Tabs.myUser.aPhoneNumber;
+				String aboutText = Tabs.myUser.aAbout;
+				
+				
 				TextView textView = new TextView(getActivity());
-				textView.setText(text);
+				textView.setText("CNet: " + cnetText + "\nPhone number: " + phoneNumber + "\nAbout myself: " + aboutText);
 				return textView;
 			default:
 				// this is needed syntactically, not logically
@@ -469,11 +482,24 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	// as should be its button from the action bar in layout/activity_pick_team.xml
 	public void firstLaunchClick()
 	{
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = getSharedPreferences(Scav.PREFS_NAME, 0);
 	    settings.edit().putBoolean("first_launch", true).commit();
 	    Intent login = new Intent(Tabs.this, LoginActivity.class);
 	    startActivity(login);
 	    finish();
+	}
+	
+	private static class getUser extends AsyncTask<Void, Void, User>
+	{
+		@Override
+		protected User doInBackground(Void...params)
+		{
+			ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
+			SharedPreferences scavPrefs = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
+			String cnetid = scavPrefs.getString("cnetid", "");
+			String password = scavPrefs.getString("password", "swordfish");
+			return myRest.getUser(cnetid, password);
+		}
 	}
 	
 	private static class getItems extends AsyncTask<Void, Void, List<Item>>
@@ -499,12 +525,6 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 		}
 	}
 		
-	
-	public static String getMe()
-	{
-		SharedPreferences settings = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
-		String myCNet = settings.getString("cnetid", "cnet goes here");
-		return myCNet;
-	}
+
 
 }

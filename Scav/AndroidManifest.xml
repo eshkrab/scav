@@ -60,6 +60,10 @@
             android:name="edu.uchicago.scav.ItemActivity"
             android:label="@string/title_activity_item" >
         </activity>
+        <activity
+            android:name="edu.uchicago.scav.UserInfo"
+            android:label="@string/title_activity_user_info" >
+        </activity>
     </application>
 
 </manifest>

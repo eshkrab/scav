@@ -31,6 +31,7 @@ public class ScavRest
     private static final String theCreateUserAddress = "/createUser";
     private static final String theCreateTeamAddress = "/createTeam";
     private static final String theCreateItemAddress = "/createItem";
+    private static final String theAmendItemAddress = "/amendItem";
     private static final String theGetUserAddress = "/getUser";
     private static final String theGetTeamAddress = "/getTeam";
     private static final String theGetAllUsersAddress = "/getAllUsers";
@@ -44,12 +45,15 @@ public class ScavRest
         this.aAccessKey = aAccessKey;
     }
 
-    public JSONObject createUser(String aCnetID, String aPassword, String aTeam) {
+    public JSONObject createUser(String aCnetID, String aPassword, String aTeam, String about, String aPhoneNumber) 
+    {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
                                                   .put("password", aPassword)
-                                                  .put("team", aTeam);
+                                                  .put("team", aTeam)
+            									  .put("about", about)
+            									  .put("phone_number", aPhoneNumber);
             return MakePostRequest(aHostName, theCreateUserAddress, myObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -58,10 +62,13 @@ public class ScavRest
         return new JSONObject();
     }
 
-    public JSONObject createTeam(String aTeam) {
+    public JSONObject createTeam(String aTeam, String aCaptain)
+    {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
-                                                  .put("team", aTeam);
+                                                  .put("team", aTeam)
+            									  .put("captain", aCaptain);
+            									  
             return MakePostRequest(aHostName, theCreateTeamAddress, myObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -70,13 +77,13 @@ public class ScavRest
         return new JSONObject();
     }
 
-    public JSONObject createItem(int number, String aName, String aDescription,String aStatus, int aPoints, String aDueDate) {
+
+	public JSONObject createItem(int number, String aDescription, int aPoints, String aDueDate)
+	{
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("number", number)
-                                                  .put("name", aName)
                                                   .put("description", aDescription)
-                                                  .put("status", aStatus)
                                                   .put("points", aPoints)
                                                   .put("due_date", aDueDate);
             return MakePostRequest(aHostName, theCreateItemAddress, myObject.toString());
@@ -87,18 +94,22 @@ public class ScavRest
         return new JSONObject();
     }
 
-    public JSONObject getUser(String aCnetID, String aPassword)
+    public User getUser(String aCnetID, String aPassword)
     {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
                                                   .put("password", aPassword);
-            return MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
+            JSONObject result =  MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
+            Log.d("User JSON data", result.toString());
+ 
+            User myUser = new User(aCnetID, result.getString("pass_hash"), result.getString("team"), result.getString("phone_number"), result.getString("about"));
+            return myUser;
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return new JSONObject();
+        return null;
     }
     
     public Boolean userExists(String aCnetID, String aPassword)
@@ -119,7 +130,6 @@ public class ScavRest
 		} catch (JSONException e) {
 			return false;
 		}
-
     }
 
     public JSONObject getTeam(String aTeam)
@@ -134,28 +144,43 @@ public class ScavRest
 
         return new JSONObject();
     }
-
-    public List<User> getUsers() {
-        JSONObject myObject = MakeGetRequest(aHostName, theGetAllUsersAddress);
-        Iterator<?> myKeys = myObject.keys();
-        List<User> myUsers = new ArrayList<User>();
-        try {
-            while(myKeys.hasNext()) {
-                String myUserName = (String)myKeys.next();
-                JSONObject myUserInfo = myObject.getJSONObject(myUserName);
-                String myUserEmail = (String) myUserInfo.get("cnetid");
-                String myUserTeam = (String) myUserInfo.get("team");
-
-                myUsers.add(new User(myUserName, myUserEmail, myUserTeam));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return myUsers;
+    
+    public JSONObject amendItem(int number, String newOwner, String newStatus)
+    {
+    	try {
+    		JSONObject amendedItem = new JSONObject().put("access_key", aAccessKey)
+    												 .put("number", number)
+    												 .put("new_owner", newOwner)
+    												 .put("new_status", newStatus);
+    		return MakePostRequest(aHostName, theAmendItemAddress, amendedItem.toString());
+    	} catch (JSONException e) {
+    		Log.e("JSON error", e.toString());
+    		return null;
+    	}
     }
 
-    public List<Team> getTeams() {
+//    public List<User> getUsers() {
+//        JSONObject myObject = MakeGetRequest(aHostName, theGetAllUsersAddress);
+//        Iterator<?> myKeys = myObject.keys();
+//        List<User> myUsers = new ArrayList<User>();
+//        try {
+//            while(myKeys.hasNext()) {
+//                String myUserName = (String)myKeys.next();
+//                JSONObject myUserInfo = myObject.getJSONObject(myUserName);
+//                String myUserEmail = (String) myUserInfo.get("cnetid");
+//                String myUserTeam = (String) myUserInfo.get("team");
+//
+//                myUsers.add(new User(myUserName, myUserEmail, myUserTeam));
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return myUsers;
+//    }
+
+    public List<Team> getTeams()
+    {
         JSONObject myObject = MakeGetRequest(aHostName, theGetAllTeamsAddress);
         Iterator<?> myKeys = myObject.keys();
         List<Team> myTeams = new ArrayList<Team>();
@@ -184,24 +209,28 @@ public class ScavRest
         return myTeams;
     }
 
-    public List<Item> getItems() {
+    public List<Item> getItems()
+    {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
         List<Item> myItems = new ArrayList<Item>();
 
-        try {
             for (int i = 1; i < (allItems.length() + 1); i++)
             {
+            	try {
                 JSONObject itemContent = (JSONObject) allItems.getJSONObject(String.valueOf(i));
                 myItems.add(new Item(i, itemContent.getString("description"),
                 		(String) itemContent.getString("status"), (int)itemContent.getInt("points") , (String) itemContent.getString("due_date")));
+            	} catch (JSONException e)
+            	{
+            		continue;
+            	}
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return myItems;
     }
-    public Item getItem(int number) {
+    
+    public Item getItem(int number)
+    {
         JSONObject allItems = MakeGetRequest(aHostName, theGetItemsAddress);
         Item nullItem = new Item(0, "null", aAccessKey, 1000, "in progress");
         
@@ -215,6 +244,8 @@ public class ScavRest
             return nullItem;
         }
     }
+    
+    
 
     private JSONObject MakePostRequest(String aURL, String aPostFix, String aJSONObject) {
         try {

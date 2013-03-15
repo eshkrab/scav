@@ -1,16 +1,12 @@
 package edu.uchicago.scav;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -26,7 +22,6 @@ import android.widget.Toast;
 
 public class PickTeam extends Activity
 {
-	private static final ScavRest myRest = new ScavRest(Scav.serverURL, Scav.accessKey);
 	static String myTeam;
 	static String myCNet;
 	static String myPassword;
@@ -59,11 +54,11 @@ public class PickTeam extends Activity
 	public void createTeamListView() throws InterruptedException, ExecutionException
 	{
 		ListView teamView = (ListView) findViewById(R.id.team_list);
-		Void[] nothing = null;
-		final List<String> teams = new PickTeam.getTeams().execute(nothing).get();
+		final List<String> teams = new PickTeam.getTeams().execute((Void) null).get();
 		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
 				android.R.id.text1, teams);
+		
 		teamView.setAdapter(adapter);
 		teamView.setOnItemClickListener(new OnItemClickListener()
 		{
@@ -125,58 +120,30 @@ public class PickTeam extends Activity
 			}
 			
 	}
-	
-	private class createUser extends AsyncTask<HashMap<String, String>, Void, String>
-	{
-		@Override
-		protected String doInBackground(HashMap<String, String>...hashMaps)
-		{
-			HashMap<String, String> user = hashMaps[0];
-			String cnet = user.get("cnetid");
-			String password = user.get("password");
-			String team = user.get("team");
-			myRest.createUser(cnet, password, team);
-			return null;
-			
-		}
-	}
+
 	
 	public void next()
 	{
-		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
-		scavPrefs.edit().putString("team", myTeam).commit();
+//		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+//		scavPrefs.edit().putString("team", myTeam).commit();
+		 
+		Intent finishLogin = new Intent(PickTeam.this, FinishLogin.class);
+		finishLogin.putExtra("cnetid", myCNet);
+		finishLogin.putExtra("password", myPassword);
+		finishLogin.putExtra("team", myTeam);
+		startActivity(finishLogin);
+		finish();
 		
-		HashMap<String, String> userData = new HashMap<String, String>();
 		
-        userData.put("cnetid", myCNet);
-        userData.put("password", myPassword);
-        userData.put("team", myTeam);
-        
-        Log.d("cnet", myCNet);
-        
-        scavPrefs.edit().putString("cnetid", myCNet).commit();
-		
-        try
-        {
-        	new createUser().execute(userData);
-            
-            scavPrefs.edit().putBoolean("first_launch", false).commit();
-    		
-    		Intent tabs = new Intent(PickTeam.this, Tabs.class);
-    		startActivity(tabs);
-    		finish();
-        }
-        catch (Exception e)
-        {
-        	final AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
-        	builder.setPositiveButton(R.string.ok_dialog, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-               
-                	AlertDialog dialog = builder.create();
-                });
-        }
-        
+//		HashMap<String, String> userData = new HashMap<String, String>();
+//		
+//        userData.put("cnetid", myCNet);
+//        userData.put("password", myPassword);
+//        userData.put("team", myTeam);
+//        
+//        Log.d("cnet", myCNet);
+//        
+//       
 	}
 	
 	public void createNewTeam(View v)
