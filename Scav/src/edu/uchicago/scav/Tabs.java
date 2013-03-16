@@ -1,22 +1,16 @@
 package edu.uchicago.scav;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.drawable;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -41,7 +35,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 @SuppressLint("DefaultLocale")
 public class Tabs extends FragmentActivity implements ActionBar.TabListener {
@@ -142,8 +135,8 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
-		case R.id.first_launch:
-			firstLaunchClick();
+		case R.id.logout:
+			logout();
 			return true;
 		case R.id.menu_settings:
 			Intent settings = new Intent(Tabs.this, SettingsActivity.class);
@@ -482,10 +475,13 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 	// TESTING
 	// this method is for testing purposes only and should be removed from the final version
 	// as should be its button from the action bar in layout/activity_pick_team.xml
-	public void firstLaunchClick()
+	public void logout()
 	{
-		SharedPreferences settings = getSharedPreferences(Scav.PREFS_NAME, 0);
-	    settings.edit().putBoolean("first_launch", true).commit();
+		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+	    scavPrefs.edit().putBoolean("first_launch", true).commit();
+	    scavPrefs.edit().remove("cnetid").commit();
+	    scavPrefs.edit().remove("password").commit();
+	    scavPrefs.edit().remove("team").commit();
 	    Intent login = new Intent(Tabs.this, LoginActivity.class);
 	    startActivity(login);
 	    finish();
@@ -500,6 +496,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			SharedPreferences scavPrefs = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
 			String cnetid = scavPrefs.getString("cnetid", "");
 			String password = scavPrefs.getString("password", "swordfish");
+			Log.d("password", password);
 			return myRest.getUser(cnetid, password);
 		}
 	}

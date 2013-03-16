@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 
 public class FinishLogin extends Activity
@@ -78,6 +77,7 @@ public class FinishLogin extends Activity
 				SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
 				scavPrefs.edit().putBoolean("first_launch", false).commit();
 				scavPrefs.edit().putString("cnetid", cnetid).commit();
+				// TODO figure out a way of not storing the password on the device in plain text maybe
 				scavPrefs.edit().putString("password", password).commit();
 				scavPrefs.edit().putString("team", team).commit();
 				

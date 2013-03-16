@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="new_team_button">Create new team</string>
+    <string name="new_team_button">Create new</string>
     <string name="create_team">create a new team</string>
     
 </resources>

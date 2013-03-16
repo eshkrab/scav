@@ -311,13 +311,15 @@ public class LoginActivity extends Activity {
 		protected Boolean doInBackground(Void... params) 
 		{
 			
-			Boolean userExists = new ScavRest(Scav.serverURL, Scav.accessKey).userExists(mCnet, mPassword);
-			Log.d("user exists", userExists.toString());
+			User myUser = new ScavRest(Scav.serverURL, Scav.accessKey).getUser(mCnet, mPassword);
 			
-			if (userExists)
+			
+			if (myUser != null)
 			{
+				Log.d("user exists", myUser.aCnetID);
 				SharedPreferences sharedPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
-				sharedPrefs.edit().putString("cnet", mCnet).commit();
+				sharedPrefs.edit().putString("cnetid", mCnet).commit();
+				sharedPrefs.edit().putString("password", myUser.aPassword).commit();
 				return true;
 			}
 			else

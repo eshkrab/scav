@@ -96,6 +96,9 @@ public class PickTeam extends Activity
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.new_team_button:
+			createNewTeam();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -146,7 +149,7 @@ public class PickTeam extends Activity
 //       
 	}
 	
-	public void createNewTeam(View v)
+	public void createNewTeam()
 	{
 		Toast notYet = Toast.makeText(getApplication(), "doesn't work yet", Toast.LENGTH_LONG);
 		notYet.show();

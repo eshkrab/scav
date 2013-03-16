@@ -112,6 +112,7 @@ public class ScavRest
         return null;
     }
     
+    @Deprecated
     public Boolean userExists(String aCnetID, String aPassword)
     {
     	JSONObject result = null;
@@ -119,7 +120,7 @@ public class ScavRest
     		JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
                                                   .put("password", aPassword);
-    		result =  MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
+    		result = MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
     	} catch (JSONException e) {
             return false;
         }

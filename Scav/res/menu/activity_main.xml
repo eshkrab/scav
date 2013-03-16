@@ -7,7 +7,6 @@
         android:title="@string/menu_settings"
         android:enabled="true" 
         android:visible="true"/>
-    <item android:id="@+id/reset_first_launch" android:title="@string/first_launch"></item>
    
 
 </menu>

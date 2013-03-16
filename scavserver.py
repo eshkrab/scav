@@ -6,7 +6,7 @@
 
 from __future__ import print_function
 from flask import Flask, request
-import json, hashlib, os, pprint, re
+import json, hashlib, os, pprint, re, random
 
 app = Flask(__name__)
 
@@ -231,9 +231,9 @@ def list_items():
 
 def hashify(password):
 	"""
-	Creates and returns a hex md5 hash of the password (or any string) that comes in
+	Creates and returns a hex sha256 hash of the password that comes in
 	"""
-	hashie = hashlib.md5()
+	hashie = hashlib.sha256()
 	hashie.update(password.encode('utf-8'))
 	pass_hash = hashie.hexdigest()
 	return pass_hash
