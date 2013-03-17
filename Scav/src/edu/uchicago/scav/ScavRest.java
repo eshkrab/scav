@@ -29,6 +29,7 @@ public class ScavRest
     private final String aHostName;
     private final String aAccessKey;
     private static final String theCreateUserAddress = "/createUser";
+    private static final String theEditUserAddress = "/edit_user";
     private static final String theCreateTeamAddress = "/createTeam";
     private static final String theCreateItemAddress = "/createItem";
     private static final String theAmendItemAddress = "/amendItem";
@@ -45,16 +46,30 @@ public class ScavRest
         this.aAccessKey = aAccessKey;
     }
 
-    public JSONObject createUser(String aCnetID, String aPassword, String aTeam, String about, String aPhoneNumber) 
+    public JSONObject createUser(String aCnetID, String aPassword)
+    {
+    	try {
+    		JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
+    											  .put("cnetid", aCnetID)
+    											  .put("password", aPassword);
+    		return MakePostRequest(aHostName, theCreateUserAddress, myObject.toString());
+    	} catch (JSONException e) {
+    		e.printStackTrace();
+    	}
+    	return new JSONObject();
+    }
+    
+    public JSONObject editUser(String aCnetID, String aPassword, String aNewPassword, String aTeam, String about, String aPhoneNumber) 
     {
         try {
             JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
                                                   .put("cnetid", aCnetID)
                                                   .put("password", aPassword)
+                                                  .put("new_password", aNewPassword)
                                                   .put("team", aTeam)
             									  .put("about", about)
             									  .put("phone_number", aPhoneNumber);
-            return MakePostRequest(aHostName, theCreateUserAddress, myObject.toString());
+            return MakePostRequest(aHostName, theEditUserAddress, myObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -103,7 +118,7 @@ public class ScavRest
             JSONObject result =  MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
             Log.d("User JSON data", result.toString());
  
-            User myUser = new User(aCnetID, result.getString("pass_hash"), result.getString("team"), result.getString("phone_number"), result.getString("about"));
+            User myUser = new User(aCnetID, result.getString("pass_hash"), result.getString("team"), result.getString("phone_number"), result.getString("about"), result.getBoolean("verified"));
             return myUser;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -112,26 +127,6 @@ public class ScavRest
         return null;
     }
     
-    @Deprecated
-    public Boolean userExists(String aCnetID, String aPassword)
-    {
-    	JSONObject result = null;
-    	try {
-    		JSONObject myObject = new JSONObject().put("access_key", aAccessKey)
-                                                  .put("cnetid", aCnetID)
-                                                  .put("password", aPassword);
-    		result = MakePostRequest(aHostName, theGetUserAddress, myObject.toString());
-    	} catch (JSONException e) {
-            return false;
-        }
-    	
-		try {
-				result.get("email");
-				return true;
-		} catch (JSONException e) {
-			return false;
-		}
-    }
 
     public JSONObject getTeam(String aTeam)
     {

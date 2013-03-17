@@ -70,7 +70,7 @@ public class FinishLogin extends Activity
 		userInfo.put("about", aboutText);
 		
 		try {
-			JSONObject result = new createUser().execute(userInfo).get();
+			JSONObject result = new editUser().execute(userInfo).get();
 			String status = result.getString("status");
 			if (status.equals("success"))
 			{
@@ -80,7 +80,7 @@ public class FinishLogin extends Activity
 				// TODO figure out a way of not storing the password on the device in plain text maybe
 				scavPrefs.edit().putString("password", password).commit();
 				scavPrefs.edit().putString("team", team).commit();
-				
+				//Toast verificationSend = Toast.makeText(getApplicationContext(), R.string., duration)
 				Intent tabs = new Intent(FinishLogin.this, Tabs.class);
 				startActivity(tabs);
 				finish();
@@ -100,7 +100,7 @@ public class FinishLogin extends Activity
 		}
 	}
 
-	private class createUser extends AsyncTask<HashMap<String, String>, Void, JSONObject>
+	private class editUser extends AsyncTask<HashMap<String, String>, Void, JSONObject>
 	{
 		@Override
 		protected JSONObject doInBackground(HashMap<String, String>...hashMaps)
@@ -112,7 +112,7 @@ public class FinishLogin extends Activity
 			String team = user.get("team");
 			String phone = user.get("phone_number");
 			String about = user.get("about");
-			JSONObject result = myRest.createUser(cnet, password, team, about, phone);
+			JSONObject result = myRest.editUser(cnet, password, "",  team, about, phone);
 			return result;
 			
 		}

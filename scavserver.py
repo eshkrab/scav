@@ -5,8 +5,12 @@
 """
 
 from __future__ import print_function
+import json, hashlib, os, pprint, re, random, smtplib, traceback
+from email.mime.text import MIMEText
+#from multiprocessing import Pool
 from flask import Flask, request
-import json, hashlib, os, pprint, re, random
+
+# pool = Pool(processes=1)
 
 app = Flask(__name__)
 
@@ -20,8 +24,10 @@ success_message = json.dumps({"status" : "success"})
 # various error messages
 illegal_access_key_error = json.dumps({'status': 'error', 'name': 'illegal_access_key_error', 'message': 'illegal access key'})
 
+no_user_error = json.dumps({'status': 'error', 'name': 'no_user_error', 'message': 'no such user'})
 duplicate_user_error = json.dumps({'status': 'error', 'name': 'duplicate_user_error', 'message': 'user already exists'})
 login_incorrect_error = json.dumps({'status': 'error', 'name': 'login_incorrect_error', 'message': 'login data incorrect'})
+user_not_verified_error = json.dumps({'status': 'error', 'name': 'user_not_verified_error', 'message': 'you haven\'t verified your CNetID'})
 
 no_team_error = json.dumps({'status': 'error', 'name': 'no_team_error', 'message': 'no such team'})
 duplicate_team_error = json.dumps({'status': 'error', 'name': 'duplicate_team_error', 'message': 'team already exists'})
@@ -31,8 +37,6 @@ duplicate_item_error = json.dumps({'status': 'error', 'name': 'duplicate_item_er
 item_status_error = json.dumps({'status': 'error', 'name': 'item_status_error', 'message': 'status must be available, in progress or done'})
 item_owner_error = json.dumps({'status': 'error', 'name': 'item_owner_error', 'message': 'item already has an owner or you are trying to pass an owner that isn\'t in users'})
 
-no_user_error = json.dumps({'status': 'error', 'name': 'no_user_error', 'message': 'no such user'})
-
 # allowed item statuses
 allowed_item_statuses = {'available', 'in progress', 'done'}
 
@@ -40,6 +44,11 @@ allowed_item_statuses = {'available', 'in progress', 'done'}
 num_nice_re = re.compile('[\(\)\+\- ]')
 num_len_re = re.compile('\d{10,11}')
 
+# async decorator
+# def async(func):
+# 	def wrapper(*args):
+# 		pool.apply_async(func, args)
+# 	return wrapper  
 
 def save_database():
 	json.dump(database, open(dbfile, "w"))
@@ -52,6 +61,56 @@ def load_database():
 		database = {"users" : {},
                     "teams" : {},
                     "items" : {}}
+
+def hashify(password):
+	"""
+	Creates and returns a hex sha256 hash of the string that comes in
+	"""
+	hashie = hashlib.sha256()
+	hashie.update(password.encode('utf-8'))
+	pass_hash = hashie.hexdigest()
+	return pass_hash
+
+# this will need to be async'ed, hopefully, unless I find out that it doesn't
+def send_verification(cnetid):
+	# make the hash
+	h = hashify(str(random.random()))
+	# compose the email
+	content = """\
+<html>
+	<head></head>
+	<body>
+		<p>Hi!
+		<br>
+		<br>
+		You are receiving this because someone, and it could've even been you, entered your CNetID into our app.<br><br>
+		If it was indeed you, go ahead and click <a href="{link}">this link</a>.<br>
+		If it was not you, alert the authorities immediately and don't leave your place of residence.<br><br>
+		Oh, and also please don't reply to this email, because then the universe might implode, and then what do we do?<br>
+		<br><br>
+		Bye-bye!
+		<br><br>
+		Your faithful Scav app server
+	</body>
+</html>
+""".format(link='http://raspi.ostensible.me:5000/verify_cnet?cnetid={}&hash={}'.format(cnetid, h))
+	msg = MIMEText(content, 'html')
+	msg['Subject'] = 'The email that you\'ve been waiting for'
+	msg['From'] = smtp_user
+	msg['To'] = '{}@uchicago.edu'.format(cnetid)
+	# establish the SMTP connection
+	try:
+		s = smtplib.SMTP_SSL(smtp_server)
+		s.connect(smtp_server)
+		s.ehlo()
+		s.login(smtp_user, smtp_pass)
+		# send the email
+		s.sendmail(smtp_user, msg['To'], msg.as_string())
+	except Exception as e:
+		print(e)
+	else:
+		database['users'][cnetid]['verification_hash'] = h
+		save_database()
 
 @app.route("/")
 def home():
@@ -92,44 +151,87 @@ def create_team():
 	# iterate over items to add team statuses for the team
 	for item in database['items']:
 		database['items'][item]['status'][team] = 'available'
-	print('creating team: {0}'.format(team))
+	# print('creating team: {0}'.format(team))
 	save_database()
 	return success_message
 
 @app.route("/createUser", methods = ['POST'])
 def create_user():
 	"""
-	Needs: access_key, cnetid, password, team, about, phone_number
+	Needs: access_key, cnetid, password
 	"""
 	cur_request = request.form if request.json is None else request.json
 	if cur_request['access_key'] != access_key:
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
-	if cnetid in database['users']:
+	if cnetid in database['users'] and database['users'][cnetid]['verified'] == True:
 		return duplicate_user_error
 	pass_hash = hashify(cur_request['password'])
+	email = cnetid + '@uchicago.edu'
+	database['users'][cnetid] = {
+								'email': email,
+								'pass_hash': pass_hash,
+								'verified': False, 
+								'team': None,
+								'about': None,
+								'phone_number': None}
+	print('creating user: {0}'.format(cnetid))
+	send_verification(cnetid)
+	save_database()
+	return success_message
+
+@app.route('/edit_user', methods=['POST'])
+def edit_user():
+	"""
+	Needs: access_key, cnetid, password, new_password, team, about, phone_number
+	"""
+	cur_request = request.form if request.json is None else request.json
+	# check the access key
+	if cur_request['access_key'] != access_key:
+		return illegal_access_key_error
+	cnetid = cur_request['cnetid']
+	# check if they exist
+	try:
+		user = database['users'][cnetid]
+	except KeyError:
+		return no_user_error
+	password = cur_request['password']
+	# check if the password is valid
+	if hashify(password) != user['pass_hash'] and password != user['pass_hash']:
+		return login_incorrect_error
+	# check if they're verified
+	if user['verified'] != True:
+		return user_not_verified_error
+	# if they want to change their password
+	try:
+		new_password = cur_request['new_password']
+		if new_password != '':
+			new_pass_hash = hashify(new_password)
+			user['pass_hash'] = new_pass_hash
+	# if they don't
+	except KeyError:
+		pass
 	team = cur_request['team']
-	if(team not in database["teams"]):
+	# check if the team exists
+	if team not in database["teams"] and team != '':
 		return no_team_error
 	about = cur_request['about']
 	try:
 		phone_number = str(cur_request['phone_number'])
+	# hopefully this won't happen, debug only
 	except KeyError as e:
 		pp = pprint.PrettyPrinter()
 		pp.pprint(cur_request)
 	# if it comes in as a nicely formatted number, we'll get rid of that nice formatting
 	if num_nice_re.search(phone_number):
 		phone_number = phone_number.translate(None, '+()- ')
-	# let's check if it's valid, or if there is something there at all
-	phone_number = phone_number if num_len_re.match(phone_number) else ''
-	email = cnetid + '@uchicago.edu'
-	database['users'][cnetid] = {'email': email, 'pass_hash': pass_hash, 'team': team, 'phone_number': phone_number, 'about': about}
+	user['team'] = team
+	user['about'] = about
+	user['phone_number'] = phone_number
 	database['teams'][team]['members'].append(cnetid)
-	print('creating user: {0}'.format(cnetid))
-	print(database['users'])
 	save_database()
 	return success_message
-
+	
 @app.route('/getUser', methods=['POST'])
 def get_user():
 	"""
@@ -229,16 +331,39 @@ def list_teams():
 def list_items():
 	return json.dumps(database["items"])
 
-def hashify(password):
-	"""
-	Creates and returns a hex sha256 hash of the password that comes in
-	"""
-	hashie = hashlib.sha256()
-	hashie.update(password.encode('utf-8'))
-	pass_hash = hashie.hexdigest()
-	return pass_hash
+@app.route('/verify_cnet')
+def verify_cnet():
+	cnetid = request.args.get('cnetid')
+	h = request.args.get('hash')
+	try:
+		if database['users'][cnetid]['verification_hash'] == h:
+			database['users'][cnetid]['verified'] = True
+			del database['users'][cnetid]['verification_hash']
+			save_database()
+			response = "Thanks, you're all set."
+		else:
+			response = """\
+			Sorry, but it looks like we couldn't verify you.
+			<br><br>
+			Try registering again, and please don't be mad!"""
+			del database['users'][cnetid]
+	except KeyError:
+		response = """\
+		We couldn't deal with your request. This either means that you're already verified, or are trying to do something that you weren't supposed to.
+		<br><br>
+		If you sense a disturbance in the Force, send us an <a href=\"mailto:{}\">email.</a>
+		""".format('scav@ostensible.me')
+	return response
 
 if __name__ == "__main__":
 	load_database()
+	# get the server configuration
+	server_config = json.load(open('serverconfig.json'))
+	# get the smtp settings
+	smtp_config = server_config['smtp']
+	smtp_server = str(smtp_config['server'])
+	smtp_port = str(smtp_config['port'])
+	smtp_user = str(smtp_config['user'])
+	smtp_pass = str(smtp_config['pass'])
 	print('PID: {0}'.format(os.getpid()))
 	app.run(debug=True, port=5000, host="0.0.0.0")

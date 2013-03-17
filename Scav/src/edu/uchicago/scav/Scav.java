@@ -8,7 +8,7 @@ import android.app.Application;
  * such as Shared
  */
 
-public class Scav extends Application
+public final class Scav extends Application
 {	
 	public final static String serverURL = "http://raspi.ostensible.me:5000";
 	public final static String accessKey = "8ee420fabd4c8c52763bed";
@@ -26,6 +26,4 @@ public class Scav extends Application
 	{
 		return app;
 	}
-	
-
 }

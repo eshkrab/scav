@@ -77,7 +77,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			myUser = new getUser().execute((Void) null).get();
 			Log.d("user", myUser.toString());
 		} catch (Exception e) {
-			myUser = new User(null, null, null, null, null);
+			myUser = new User(null, null, null, null, null, false);
 		}
 		myTeam = myUser.aTeamName;
 		
@@ -496,7 +496,7 @@ public class Tabs extends FragmentActivity implements ActionBar.TabListener {
 			SharedPreferences scavPrefs = Scav.getApp().getSharedPreferences(Scav.PREFS_NAME, 0);
 			String cnetid = scavPrefs.getString("cnetid", "");
 			String password = scavPrefs.getString("password", "swordfish");
-			Log.d("password", password);
+			// Log.d("password", password);
 			return myRest.getUser(cnetid, password);
 		}
 	}

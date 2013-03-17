@@ -7,6 +7,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,8 +38,6 @@ public class LoginActivity extends Activity {
 	 * A dummy authentication store containing known user names and passwords.
 	 * TODO: remove after connecting to a real authentication system.
 	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
 
 	/**
 	 * The default email to populate the email field with.
@@ -110,7 +109,15 @@ public class LoginActivity extends Activity {
 					public boolean onEditorAction(TextView textView, int id,
 							KeyEvent keyEvent) {
 						if (id == R.id.login || id == EditorInfo.IME_NULL) {
-							attemptLogin();
+							try {
+								attemptLogin();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (ExecutionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							return true;
 						}
 						return false;
@@ -125,7 +132,15 @@ public class LoginActivity extends Activity {
 				new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						attemptLogin();
+						try {
+							attemptLogin();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 	}
@@ -176,11 +191,14 @@ public class LoginActivity extends Activity {
 	 * Attempts to sign in or register the account specified by the login form.
 	 * If there are form errors (invalid email, missing fields, etc.), the
 	 * errors are presented and no actual login attempt is made.
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public void attemptLogin() {
-		if (mAuthTask != null) {
-			return;
-		}
+	public void attemptLogin() throws InterruptedException, ExecutionException {
+		// get rid of this to make it respond to the sign in button every time
+//		if (mAuthTask != null) {
+//			return;
+//		}
 
 		// Reset errors.
 		mCnetView.setError(null);
@@ -219,46 +237,93 @@ public class LoginActivity extends Activity {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
-			showProgress(true);
+			showProgress(false);
 			mAuthTask = new UserLoginTask();
 			
-			try {
 				// check if the user exists and return a dialog box if not
-				Boolean result = mAuthTask.execute((Void) null).get();
-				if (!result)
+				User myUser = mAuthTask.execute((Void) null).get();
+				
+				if (myUser == null)
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
 					builder.setMessage(R.string.no_user_found_text);
 					builder.setTitle(R.string.no_user_found_title);
 					builder.setPositiveButton(R.string.new_user_button, new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
+				           public void onClick(DialogInterface dialog, int id)
+				           {
 				        	   // go to register them
 				               registerNewUser();
+				               Toast verificationSent = Toast.makeText(Scav.app, R.string.verification_sent, Toast.LENGTH_LONG);
+				               verificationSent.setGravity(Gravity.CENTER, 0, 0);
+				               verificationSent.show();
 				           }
 				       });
 					builder.setNegativeButton(R.string.made_mistake_login,  new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				           }
+				           public void onClick(DialogInterface dialog, int id) 
+				           {}
 				       });
 					AlertDialog dialog = builder.create();
 					dialog.show();
+				} else if (myUser.cnetVerified == false)
+				{
+					Log.d("message", "I get here");
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setMessage(R.string.not_verified_text);
+					builder.setTitle(R.string.not_verified_title);
+					builder.setPositiveButton(R.string.ok_dialog, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {}
+					});
+					builder.setNegativeButton(R.string.no_verification_email, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							registerNewUser();
+							Toast emailResent = Toast.makeText(Scav.app, R.string.verification_resent, Toast.LENGTH_LONG);
+							emailResent.show();
+						}
+					});
+					AlertDialog dialog = builder.create();
+					dialog.show();
+				} else if (myUser.cnetVerified == true)
+				{
+					Log.d("team", myUser.aTeamName);
+					if (myUser.aTeamName == "null")
+					{
+						completeRegistration();
+					} else
+					{
+						launchTabs();
+					}
 				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				
 		}
 	}
 	
 	protected void registerNewUser()
 	{
+		new RegisterNewUser().execute((Void) null);
+	}
+	
+	protected void completeRegistration()
+	{
 		Intent pickTeam = new Intent(LoginActivity.this, PickTeam.class);
 		pickTeam.putExtra("cnet", mCnet);
 		pickTeam.putExtra("password", mPassword);
 		startActivity(pickTeam);
+	}
+	
+	protected void launchTabs()
+	{
+		SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
+		scavPrefs.edit().putString("cnetid", mCnet).commit();
+		scavPrefs.edit().putString("password", mPassword).commit();
+		scavPrefs.edit().putBoolean("first_launch", false).commit();
+		Intent tabs = new Intent(LoginActivity.this, Tabs.class);
+		startActivity(tabs);
+		finish();
 	}
 
 	/**
@@ -306,51 +371,25 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	private class UserLoginTask extends AsyncTask<Void, Void, User> {
 		@Override
-		protected Boolean doInBackground(Void... params) 
+		protected User doInBackground(Void... params) 
 		{
 			
 			User myUser = new ScavRest(Scav.serverURL, Scav.accessKey).getUser(mCnet, mPassword);
-			
-			
-			if (myUser != null)
-			{
-				Log.d("user exists", myUser.aCnetID);
-				SharedPreferences sharedPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
-				sharedPrefs.edit().putString("cnetid", mCnet).commit();
-				sharedPrefs.edit().putString("password", myUser.aPassword).commit();
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-
-		}
-
-		@Override
-		protected void onPostExecute(final Boolean success) {
-			mAuthTask = null;
-			showProgress(false);
-
-			if (success) {
-				Intent tabs = new Intent(LoginActivity.this, Tabs.class);
-				SharedPreferences scavPrefs = getSharedPreferences(Scav.PREFS_NAME, 0);
-				scavPrefs.edit().putBoolean("first_launch", false).commit();
-				// TODO
-				// get the user information to store in the local 
-				startActivity(tabs);
-				finish();
-			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			mAuthTask = null;
-			showProgress(false);
+			return myUser;
 		}
 		
+	}
+	
+	private class RegisterNewUser extends AsyncTask<Void, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Void...params)
+		{
+			new ScavRest(Scav.serverURL, Scav.accessKey).createUser(mCnet, mPassword);
+			return null;
+		}
 	}
 	
 }

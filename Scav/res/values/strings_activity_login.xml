@@ -16,5 +16,25 @@
     <string name="uchicago_email">"@uchicago.edu"</string>
     <string name="pretend">Pretend I registered</string>
     <string name="cnet_alert">This has to be your CNet ID, not some other random email. Like &quot;zimmer@uchicago.edu&quot;, but without the &quot;@uchicago.edu&quot; part.</string>
+    
+    <string name="ok_dialog">Right</string>
+    <string name="pick_team_fail_message">I wasn\'t able to do that. Perhaps you have no Internet connection?</string>
+    <string name="pick_team_fail_title">Something went wrong!</string>
+    <string name="no_user_found_title">We couldn\'t find you!</string>
+    <string name="no_user_found_text">There was no user found with these credentials. Are you new, or did you make a mistake somewhere?</string>
+    <string name="new_user_button">I\'m new</string>
+    <string name="made_mistake_login">Must\'ve messed up</string>
+    <string name="title_activity_item">ItemActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_user_info">UserInfo</string>
+    <string name="enter_phone">Your phone number (leave blank if you don\'t want us to know it)</string>
+    <string name="about_user">Use this field to show everyone how creative you are</string>
+    <string name="next_button">Next</string>
+    <string name="title_finish_login">Add extra info</string>
+    <string name="not_verified_title">You haven\'t verified your CNetID</string>
+    <string name="not_verified_text">You should have received an email from us, asking you to click a link. Please go and click it, we need that to go on from here.</string>
+    <string name="no_verification_email">There was no email!</string>
+    <string name="verification_resent">We have sent you another verification email. If it doesn\'t come, please email us at scav@ostensible.me</string>
+    <string name="verification_sent">Verification email sent. </string>
 
 </resources>
