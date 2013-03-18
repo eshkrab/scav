@@ -13,15 +13,13 @@ from flask import Flask, request
 # pool = Pool(processes=1)
 
 app = Flask(__name__)
+app.config.from_object('serverconfig.DevelopmentConfig')
 
-database = {}
-dbfile = "scavdb.json"
-
-access_key = open('acess_key').read()
+# various response messages
 
 success_message = json.dumps({"status" : "success"})
 
-# various error messages
+# error messages
 illegal_access_key_error = json.dumps({'status': 'error', 'name': 'illegal_access_key_error', 'message': 'illegal access key'})
 
 no_user_error = json.dumps({'status': 'error', 'name': 'no_user_error', 'message': 'no such user'})
@@ -51,12 +49,12 @@ num_len_re = re.compile('\d{10,11}')
 # 	return wrapper  
 
 def save_database():
-	json.dump(database, open(dbfile, "w"))
+	json.dump(database, open(app.config['DB_FILE'], 'w'))
 
 def load_database():
 	global database
 	try:
-		database = json.load(open(dbfile))
+		database = json.load(open(app.config['DB_FILE']))
 	except IOError:
 		database = {"users" : {},
                     "teams" : {},
@@ -95,17 +93,18 @@ def send_verification(cnetid):
 </html>
 """.format(link='http://raspi.ostensible.me:5000/verify_cnet?cnetid={}&hash={}'.format(cnetid, h))
 	msg = MIMEText(content, 'html')
+	smtp_config = app.config['SMTP']
 	msg['Subject'] = 'The email that you\'ve been waiting for'
-	msg['From'] = smtp_user
+	msg['From'] = smtp_config['user']
 	msg['To'] = '{}@uchicago.edu'.format(cnetid)
 	# establish the SMTP connection
 	try:
-		s = smtplib.SMTP_SSL(smtp_server)
-		s.connect(smtp_server)
+		s = smtplib.SMTP_SSL(smtp_config['server'])
+		s.connect(smtp_config['server'])
 		s.ehlo()
-		s.login(smtp_user, smtp_pass)
+		s.login(smtp_config['user'], smtp_config['password'])
 		# send the email
-		s.sendmail(smtp_user, msg['To'], msg.as_string())
+		s.sendmail(smtp_config['user'], msg['To'], msg.as_string())
 	except Exception as e:
 		print(e)
 	else:
@@ -122,7 +121,7 @@ def create_item():
 	Needs: access_key, number, description, points, due_date
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_access_key_error
 	number = cur_request['number']
 	if number in database['items']:
@@ -141,7 +140,7 @@ def create_team():
 	Needs: access_key, team (name), captain (cnet)
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_access_key_error
 	team = cur_request['team']
 	captain = cur_request['captain']
@@ -161,7 +160,7 @@ def create_user():
 	Needs: access_key, cnetid, password
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
 	if cnetid in database['users'] and database['users'][cnetid]['verified'] == True:
@@ -187,7 +186,7 @@ def edit_user():
 	"""
 	cur_request = request.form if request.json is None else request.json
 	# check the access key
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
 	# check if they exist
@@ -238,7 +237,7 @@ def get_user():
 	Needs: access_key, cnetid, password
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_access_key_error
 	cnetid = cur_request['cnetid']
 	password = cur_request['password']
@@ -259,7 +258,7 @@ def get_team():
 	Needs: access_key, teamname
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_acccess_key_error
 	teamname = cur_request['team']
 	try:
@@ -274,7 +273,7 @@ def get_item():
 	Needs: access_key, number
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_acccess_key_error
 	number = cur_request['number']
 	try:
@@ -289,7 +288,7 @@ def amend_item():
 	Needs: access_key, number, new_status, new_owner
 	"""
 	cur_request = request.form if request.json is None else request.json
-	if cur_request['access_key'] != access_key:
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
 		return illegal_acccess_key_error
 	number = cur_request['number']
 	try:
@@ -340,7 +339,10 @@ def verify_cnet():
 			database['users'][cnetid]['verified'] = True
 			del database['users'][cnetid]['verification_hash']
 			save_database()
-			response = "Thanks, you're all set."
+			response = """\
+			<h2>Thanks, you're all set.</h2>
+			<br><br>
+			Please go back into the app and log in."""
 		else:
 			response = """\
 			Sorry, but it looks like we couldn't verify you.
@@ -351,19 +353,12 @@ def verify_cnet():
 		response = """\
 		We couldn't deal with your request. This either means that you're already verified, or are trying to do something that you weren't supposed to.
 		<br><br>
-		If you sense a disturbance in the Force, send us an <a href=\"mailto:{}\">email.</a>
+		If you sense a disturbance in the Force, send us an <a href=\"mailto:{}?subject=I%20sense%20a%20disturbance%20in%20the%20Force\">email.</a>
 		""".format('scav@ostensible.me')
 	return response
 
 if __name__ == "__main__":
 	load_database()
 	# get the server configuration
-	server_config = json.load(open('serverconfig.json'))
-	# get the smtp settings
-	smtp_config = server_config['smtp']
-	smtp_server = str(smtp_config['server'])
-	smtp_port = str(smtp_config['port'])
-	smtp_user = str(smtp_config['user'])
-	smtp_pass = str(smtp_config['pass'])
 	print('PID: {0}'.format(os.getpid()))
 	app.run(debug=True, port=5000, host="0.0.0.0")

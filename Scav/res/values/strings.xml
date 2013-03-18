@@ -17,5 +17,6 @@
     <string name="done_header">Done</string>
 
     <item name="item_list" format="integer" type="id">1234563</item>
+    <string name="pts">pts</string>
 
 </resources>
