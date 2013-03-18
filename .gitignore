@@ -20,3 +20,6 @@ local.properties
 .classpath
 .project
 
+# Server config file
+serverconfig.py
+
