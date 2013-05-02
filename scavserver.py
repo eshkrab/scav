@@ -7,7 +7,7 @@
 from __future__ import print_function
 import json, hashlib, os, pprint, re, random, smtplib, traceback
 from email.mime.text import MIMEText
-#from multiprocessing import Pool
+# from multiprocessing import Pool
 from flask import Flask, request
 
 # pool = Pool(processes=1)
@@ -230,6 +230,33 @@ def edit_user():
 	database['teams'][team]['members'].append(cnetid)
 	save_database()
 	return success_message
+
+@app.route('/drop_user', methods=['POST'])
+def drop_user():
+	"""
+	Needs: access_key, cnetid
+	THIS FUNCTION IS DANGEROUS, SO DON'T USE IT WITHOUT A GOOD REASON
+	"""
+	cur_request = request.form if request.json is None else request.json
+	if cur_request['access_key'] != app.config['ACCESS_KEY']:
+		return illegal_access_key_error
+	cnetid = cur_request['cnetid']
+	# try killing them
+	try:
+		user = database['users'][cnetid]
+		team = user['team']
+		# delete them from their team, unless they're a captain, in which case we don't
+		if team is not None:
+			if cnetid in database['teams'][team]['members']:
+				del database['teams'][team]['members'][cnetid]
+			elif cnetid == database['teams'][team]['captain']:
+				return json.dumps({'status':  'error',
+					'message': 'user \'{}\' is the captain if \'{}\' and cannot be deleted'.format(cnetid, team)})
+		del database['users'][cnetid]
+	except KeyError:
+		return no_user_error
+	save_database()
+	return json.dumps({'status': 'success', 'message': 'user \'{}\' deleted'.format(cnetid)})
 	
 @app.route('/getUser', methods=['POST'])
 def get_user():
